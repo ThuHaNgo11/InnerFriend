@@ -11,6 +11,9 @@ const journalSchema = new mongoose.Schema({
     },
     createdAt: {
         type: String,
+    },
+    imageUrl: {
+        type: String,
     }
 })
 

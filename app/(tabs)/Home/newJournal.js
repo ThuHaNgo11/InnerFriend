@@ -1,22 +1,45 @@
-import { StyleSheet, Text, View, TextInput, Alert } from 'react-native'
+import { StyleSheet, Text, View, TextInput, Alert, Image, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import CustomedButton from '../../components/CustomedButton';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome5, Feather } from '@expo/vector-icons';
 import { useNavigation } from 'expo-router';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as ImagePicker from 'expo-image-picker';
 
 const newJournal = () => {
+    const date = new Date().toLocaleDateString('en-us', { weekday: "long", month: "long", day: "numeric" });
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
+    const [imageUri, setImageUri] = useState(null);
+
     const navigation = useNavigation();
+
+    const pickImage = async () => {
+        // No permissions request is necessary for launching the image library
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3], //only on Android
+            quality: 1,
+        });
+        if (!result.canceled) {
+            setImageUri(result.assets[0].uri);
+        }
+    };
+
+    const deleteImage = async () => {
+        setImageUri(null)
+        // delete uploaded image on cloudinary
+    }
 
     const saveEntry = async () => {
         try {
             const journalData = {
                 title,
                 content,
-                date
+                date,
+                imageUri
             }
             const id = await AsyncStorage.getItem('id');
             await axios.post(`http://localhost:3000/user/${id}/journals`, journalData)
@@ -27,7 +50,6 @@ const newJournal = () => {
             console.log("Error", error)
         }
     }
-    const date = new Date().toLocaleDateString('en-us', { weekday: "long", month: "long", day: "numeric" });
 
     return (
         <View style={styles.container}>
@@ -54,9 +76,17 @@ const newJournal = () => {
                 autoCorrect={false}
                 multiline
             />
-            <CustomedButton
-                title="Save"
-                handler={saveEntry} />
+            {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
+            <View style={styles.buttonContainer}>
+                {imageUri ? (
+                    <TouchableOpacity onPress={deleteImage}>
+                        <Feather name="trash-2" size={24} color="black" />
+                    </TouchableOpacity>
+                ) : (<TouchableOpacity onPress={pickImage}>
+                    <FontAwesome5 name="image" size={24} color="black" />
+                </TouchableOpacity>)}
+                <CustomedButton title="Save" handler={saveEntry} />
+            </View>
         </View>
     )
 }
@@ -89,6 +119,16 @@ const styles = StyleSheet.create({
         height: '40%',
         marginBottom: 10,
         borderColor: 'transparent'
+    },
+    image: {
+        width: '100%',
+        height: 180,
+        borderRadius: 10
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
     }
 })
 

@@ -2,7 +2,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const crypto = require("crypto");
-
+require("dotenv").config();
+const cloudinary = require("cloudinary").v2;
 const app = express();
 const port = 3000;
 const cors = require("cors");
@@ -17,6 +18,13 @@ mongoose.connect("mongodb+srv://21520131:ttFlCRmjHJ8KkGV3@cluster0.8c3rx6z.mongo
 }).catch(e => {
     console.log("Error connecting to Mongodb", e)
 })
+
+// cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET,
+});          
 
 app.listen(port, () => {
     console.log("Server is running on port 3000")
@@ -99,15 +107,21 @@ app.get('/user/:id', async (req, res) => {
 })
 
 // Create journal
-app.post('/user/:userId/journals', async(req, res) => {
+app.post('/user/:userId/journals', async (req, res) => {
     try {
         const userId = req.params.userId;
-        const { title, content, date } = req.body;
+        const { title, content, date, imageUri } = req.body;
+
+        const filePath = imageUri.replace(/^file:\/\//, '');
+        const cloudinaryRes = await cloudinary.uploader.upload(filePath, {
+            resource_type: "auto",
+        });
 
         const newJournal = new Journal({
             title,
             content,
-            createdAt: date
+            createdAt: date,
+            imageUrl: cloudinaryRes.url
         });
 
         // add journal to the existing journals collection

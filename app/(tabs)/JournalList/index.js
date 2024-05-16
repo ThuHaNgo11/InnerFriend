@@ -26,8 +26,8 @@ const index = () => {
     fetchJournalData();
   }, [])
 
-  const renderJournal = ({ item, key}) => (
-    <View style={styles.journalContainer}>
+  const renderJournal = ({ item }) => (
+    <View key={item.keyExtractor} style={styles.journalContainer}>
       <View style={styles.journalHeaderContainer}>
         <Text style={styles.journalTitle}>{item.title}</Text>
         <Text style={styles.journalDate}>{item.createdAt}</Text>
@@ -44,7 +44,8 @@ const index = () => {
       <FlatList
         data={journals}
         renderItem={renderJournal}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item._id}
+        contentContainerStyle={{ paddingBottom: 50}}
       />
     </View>
   );
@@ -54,13 +55,14 @@ export default index;
 
 const styles = StyleSheet.create({
   mainContainer: {
+    flex: 1,
     gap: 20
   },
   journalContainer: {
     margin: 10,
     gap: 10
   },
-  journalHeaderContainer:{
+  journalHeaderContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between'

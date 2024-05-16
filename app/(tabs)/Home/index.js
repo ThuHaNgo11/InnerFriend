@@ -4,6 +4,7 @@ import colors from '../../../constants/colors';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { useNavigation } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const index = () => {
     const [userName, setUserName] = useState("");
@@ -27,24 +28,26 @@ const index = () => {
     }, [])
 
     return (
-        <View style={styles.mainContainer}>
-            <Image source={require("../../../assets/fallback.jpeg")} />
-            <Text style={styles.text}>Hello {userName},</Text>
-            <Text style={styles.text}>
-                What's on your mind?
-            </Text>
-            <View style={styles.secondaryContainer}>
-                <TouchableOpacity 
-                    style={styles.button}
-                    onPress={() => {navigation.navigate('newJournal')}}
-                >
-                    <Text style={styles.buttonText}>Writing</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText}>Reflecting</Text>
-                </TouchableOpacity>
+        <SafeAreaView>
+            <View style={styles.mainContainer}>
+                <Image source={require("../../../assets/fallback.jpeg")} />
+                <Text style={styles.text}>Hello {userName},</Text>
+                <Text style={styles.text}>
+                    What's on your mind?
+                </Text>
+                <View style={styles.secondaryContainer}>
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => { navigation.navigate('newJournal') }}
+                    >
+                        <Text style={styles.buttonText}>Writing</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button}>
+                        <Text style={styles.buttonText}>Reflecting</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-        </View>
+        </SafeAreaView>
     );
 };
 
@@ -58,7 +61,6 @@ const styles = StyleSheet.create({
         fontStyle: "italic",
     },
     mainContainer: {
-        marginTop: 40,
         gap: 12,
         alignItems: "center",
     },
