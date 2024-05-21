@@ -1,19 +1,25 @@
 import { StyleSheet, Text, View, TextInput, Alert, Image, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import CustomedButton from '../../components/CustomedButton';
 import { Ionicons, FontAwesome5, Feather } from '@expo/vector-icons';
-import { useNavigation } from 'expo-router';
+import { useRouter } from 'expo-router';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
+import { firebase } from "../../../firebase";
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const newJournal = () => {
     const date = new Date().toLocaleDateString('en-us', { weekday: "long", month: "long", day: "numeric" });
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [imageUri, setImageUri] = useState(null);
+    // const [imageUrl, setImageUrl] = useState(null);
+    const [loading, setLoading] = useState(false);
 
-    const navigation = useNavigation();
+    // const navigation = useNavigation();
+    const router = useRouter();
 
     const pickImage = async () => {
         // No permissions request is necessary for launching the image library
@@ -24,27 +30,64 @@ const newJournal = () => {
             quality: 1,
         });
         if (!result.canceled) {
+            //imageUri is the local path to image
             setImageUri(result.assets[0].uri);
         }
     };
 
+
     const deleteImage = async () => {
-        setImageUri(null)
+        setImageUri(null);
         // delete uploaded image on cloudinary
     }
 
+    const uploadFile = async () => {
+        setLoading(true)
+        try {
+            const { uri } = await FileSystem.getInfoAsync(imageUri);
+
+            if (!uri) {
+                throw new Error("Invalid file Uri");
+            }
+
+            const blob = await new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.onload = () => {
+                    resolve(xhr.response);
+                }
+                xhr.onerror = (e) => {
+                    reject(new TypeError("Network request failed"));
+                }
+                xhr.responseType = "blob";
+                xhr.open("GET", uri, true);
+                xhr.send(null)
+            })
+
+            const filename = imageUri.substring(imageUri.lastIndexOf("/") + 1);
+            const ref = firebase.storage().ref().child(filename);
+            await ref.put(blob);
+            const downloadUrl = await ref.getDownloadURL();
+            return downloadUrl;
+        } catch (error) {
+            console.log("Error: ", error)
+        }
+    }
+
     const saveEntry = async () => {
+        const uploadedUrl = await uploadFile();
         try {
             const journalData = {
                 title,
                 content,
                 date,
-                imageUri
+                uploadedUrl
             }
             const id = await AsyncStorage.getItem('id');
             await axios.post(`http://localhost:3000/user/${id}/journals`, journalData)
 
-            Alert.alert('Success', 'Journal saved', [{ text: 'OK', onPress: () => navigation.navigate('JournalList') }])
+            setLoading(false)
+
+            Alert.alert('Success', 'Journal saved', [{ text: 'OK', onPress: () => router.replace('/(tabs)/JournalList') }])
 
         } catch (error) {
             console.log("Error", error)
@@ -58,17 +101,19 @@ const newJournal = () => {
                     name="arrow-back"
                     size={24}
                     color="black"
-                    onPress={() => navigation.goBack()}
+                    onPress={() => router.back()}
                 />
                 <Text style={styles.journalDate}>{date}</Text>
             </View>
             <TextInput
+                // make this field required
                 style={styles.titleInput}
                 placeholder="Title"
                 value={title}
                 onChangeText={setTitle}
             />
             <TextInput
+                // make this field required
                 style={styles.contentInput}
                 placeholder="Content"
                 value={content}
@@ -87,6 +132,11 @@ const newJournal = () => {
                 </TouchableOpacity>)}
                 <CustomedButton title="Save" handler={saveEntry} />
             </View>
+            <Spinner
+                visible={loading}
+                textContent={'Saving...'}
+                textStyle={styles.spinnerTextStyle}
+            />
         </View>
     )
 }
@@ -116,7 +166,7 @@ const styles = StyleSheet.create({
     },
     contentInput: {
         fontSize: 12,
-        height: '40%',
+        maxHeight: '40%',
         marginBottom: 10,
         borderColor: 'transparent'
     },
@@ -129,7 +179,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between'
-    }
+    },
+    spinnerTextStyle: {
+        color: '#FFF'
+    },
 })
 
 // test data:

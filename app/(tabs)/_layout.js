@@ -1,6 +1,5 @@
 import { Tabs } from "expo-router";
-import { AntDesign } from '@expo/vector-icons';
-import { Ionicons, Entypo } from '@expo/vector-icons';
+import { Ionicons, Entypo, AntDesign } from '@expo/vector-icons';
 import colors from "../../constants/colors"
 
 export default function Layout() {
@@ -29,16 +28,16 @@ export default function Layout() {
                 }}
             />
             <Tabs.Screen
-                name="Calendar"
+                name="Gallery"
                 options={{
-                    tabBarLabel: "Calendar",
+                    tabBarLabel: "Gallery",
                     tabBarLabelStyle: { color: colors.secondary },
                     headerShown: false,
                     tabBarIcon: ({ focused }) => {
                         return focused ? (
-                            <AntDesign name="calendar" size={24} color={colors.accent} />
+                            <Entypo name="folder-images" size={24} color={colors.accent} />
                         ) : (
-                            <AntDesign name="calendar" size={24} color={colors.secondary} />
+                            <Entypo name="folder-images" size={24} color={colors.secondary} />
                         )
                     }
                 }}

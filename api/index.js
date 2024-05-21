@@ -1,15 +1,19 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const busboy = require('connect-busboy');
 const mongoose = require("mongoose");
 const crypto = require("crypto");
 require("dotenv").config();
 const cloudinary = require("cloudinary").v2;
+const util = require('util');
 const app = express();
 const port = 3000;
 const cors = require("cors");
-app.use(cors());
+const {Readable} = require('readable-stream')
 
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(busboy());
 app.use(bodyParser.json());
 const jwt = require("jsonwebtoken")
 
@@ -21,10 +25,13 @@ mongoose.connect("mongodb+srv://21520131:ttFlCRmjHJ8KkGV3@cluster0.8c3rx6z.mongo
 
 // cloudinary
 cloudinary.config({
-    cloud_name: process.env.CLOUD_NAME,
-    api_key: process.env.API_KEY,
-    api_secret: process.env.API_SECRET,
-});          
+    // cloud_name: process.env.CLOUD_NAME,
+    // api_key: process.env.API_KEY,
+    // api_secret: process.env.API_SECRET,
+    cloud_name: "innerfriendv2",
+    api_key: "978813519436797",
+    api_secret: "5COTqkKSCi0iBnl3k-5y8Ezrmfw",
+});
 
 app.listen(port, () => {
     console.log("Server is running on port 3000")
@@ -110,18 +117,13 @@ app.get('/user/:id', async (req, res) => {
 app.post('/user/:userId/journals', async (req, res) => {
     try {
         const userId = req.params.userId;
-        const { title, content, date, imageUri } = req.body;
-
-        const filePath = imageUri.replace(/^file:\/\//, '');
-        const cloudinaryRes = await cloudinary.uploader.upload(filePath, {
-            resource_type: "auto",
-        });
+        const { title, content, date, uploadedUrl } = req.body;
 
         const newJournal = new Journal({
             title,
             content,
             createdAt: date,
-            imageUrl: cloudinaryRes.url
+            imageUrl: uploadedUrl 
         });
 
         // add journal to the existing journals collection
@@ -142,7 +144,8 @@ app.post('/user/:userId/journals', async (req, res) => {
     }
 })
 
-// fetch journals
+// fetch journals 
+// how to sort and display the newest journal first
 app.get("/user/:userId/journals", async (req, res) => {
     try {
         const userId = req.params.userId;
@@ -155,5 +158,22 @@ app.get("/user/:userId/journals", async (req, res) => {
         res.status(200).json({ journals: user.journals });
     } catch (error) {
         res.status(500).json({ error: "Something went wrong :(" })
+    }
+})
+
+//get individual journal
+app.get("journals/:journalId", async (req, res) => {
+    try {
+        const journalId = req.params.journalId;
+        const journal = await Journal.findById(journalId);
+
+        if (!journal) {
+            return res.status(404).json({ error: "journal not found" })
+        }
+
+        res.status(200).json({ journal});
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ error: "Can't get journal" })
     }
 })

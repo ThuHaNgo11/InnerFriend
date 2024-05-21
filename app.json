@@ -34,6 +34,21 @@
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow $(name) to access your photos.",
+          "savePhotosPermission": "Allow $(name) to save photos.",
+          "videosPermission": "Allow $(name) to access your videos.",
+          "isAccessMediaLocationEnabled": true
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": ["node_modules/@expo-google-fonts/nunito-sans/NunitoSans_400Regular.ttf"]
+        }
       ]
     ]
   }
