@@ -8,7 +8,7 @@ const FallbackScreen = () => {
     return (
         <View style={styles.container}>
             <Image
-                source={require('../../assets/fallbackscreen.png')}
+                source={require('../assets/fallbackscreen.png')}
                 style={styles.image}
             />
             <Text style={styles.text}>Start writing your first journal</Text>

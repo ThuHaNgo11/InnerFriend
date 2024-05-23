@@ -14,6 +14,8 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import axios from "axios"
+import colors from '../../constants/colors';
+import CustomedButton from '../../components/CustomedButton';
 
 const register = () => {
     const [userName, setUserName] = useState("")
@@ -49,9 +51,9 @@ const register = () => {
                     <Text style={styles.subHeading}>Create your account</Text>
                 </View>
 
-                <View style={{ marginTop: 50 }}>
+                <View style={{ marginTop: 30 }}>
                     <View style={styles.inputContainer}>
-                        <Ionicons style={{ marginHorizontal: 5 }} name="person" size={24} color="gray" />
+                        <Ionicons style={{ marginHorizontal: 5 }} name="person" size={24}  color={colors.secondary} />
                         <TextInput
                             placeholder='Enter your name'
                             style={styles.textInput}
@@ -61,7 +63,7 @@ const register = () => {
                         />
                     </View>
                     <View style={styles.inputContainer}>
-                        <MaterialIcons style={{ marginHorizontal: 5 }} name="email" size={24} color="gray" />
+                        <MaterialIcons style={{ marginHorizontal: 5 }} name="email" size={24}  color={colors.secondary} />
                         <TextInput
                             placeholder='Enter your email'
                             style={styles.textInput}
@@ -71,7 +73,7 @@ const register = () => {
                         />
                     </View>
                     <View style={styles.inputContainer}>
-                        <FontAwesome name="lock" size={26} color="gray" style={{ marginHorizontal: 5 }} />
+                        <FontAwesome name="lock" size={26}  color={colors.secondary} style={{ marginHorizontal: 5 }} />
                         <TextInput
                             placeholder='Enter your password'
                             style={styles.textInput}
@@ -81,17 +83,12 @@ const register = () => {
                             autoCapitalize="none"
                         />
                     </View>
-
-                    <View style={{ marginTop: 60 }} />
-                    <TouchableOpacity
-                        onPress={handleRegister}
-                        style={styles.signupButton}
-                    >
-                        <Text style={styles.signupButtonText}>Sign up</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => { router.replace("/login") }} style={{ marginTop: 12 }}>
-                        <Text style={styles.loginText}>Already had an account? Login</Text>
-                    </TouchableOpacity>
+                    <View style={styles.buttonContainer}>
+                        <CustomedButton title="Register" handler={handleRegister} />
+                        <TouchableOpacity onPress={() => { router.replace("/login") }}>
+                            <Text style={styles.loginText}>Already had an account? Login</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </KeyboardAvoidingView>
         </SafeAreaView>
@@ -106,13 +103,10 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         alignItems: 'center'
     },
-    container: {
-
-    },
     heading: {
         fontSize: 36,
         fontWeight: 'bold',
-        color: '#0066B2'
+        color: colors.accent
     },
     subHeading: {
         fontSize: 16,
@@ -133,23 +127,13 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         marginTop: 30
     },
-    upButton: {
-        width: 200,
-        backgroundColor: "#6699CC",
-        padding: 15,
-        borderRadius: 10,
-        marginLeft: 'auto',
-        marginRight: 'auto'
-    },
-    signupButtonText: {
-        color: "white",
-        fontWeight: 'bold',
-        fontSize: 16,
-        textAlign: 'center'
+    buttonContainer: {
+        marginTop: 40,
+        alignItems: 'center',
+        gap: 20
     },
     loginText: {
         color: "gray",
         fontSize: 12,
-        textAlign: 'center'
     }
 })

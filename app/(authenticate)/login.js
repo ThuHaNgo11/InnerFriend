@@ -5,7 +5,7 @@ import {
     SafeAreaView,
     KeyboardAvoidingView,
     TextInput,
-    TouchableOpacity, 
+    TouchableOpacity,
     Alert
 } from 'react-native'
 import React, { useState, useEffect } from 'react'
@@ -14,27 +14,28 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import CustomedButton from '../../components/CustomedButton';
+import colors from '../../constants/colors';
 const login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const router = useRouter();
 
     // if token has not expired 
-    useEffect(() => {
-        const checkLoginStatus = async () => {
-            try {
-                const token = AsyncStorage.getItem('authToken');
-                if(token){
-                    router.replace("/(tabs)/Home")
-                }
-            } catch (error) {
-                console.log(error)
-            }
-        }
+    // useEffect(() => {
+    //     const checkLoginStatus = async () => {
+    //         try {
+    //             const token = AsyncStorage.getItem('authToken');
+    //             if(token){
+    //                 router.replace("/(tabs)/Home")
+    //             }
+    //         } catch (error) {
+    //             console.log(error)
+    //         }
+    //     }
 
-        checkLoginStatus();
-    }, [])
+    //     checkLoginStatus();
+    // }, [])
 
     // test user: Ha@gmail.com - 1234
 
@@ -65,9 +66,9 @@ const login = () => {
                     <Text style={styles.subHeading}>Log in to your account</Text>
                 </View>
 
-                <View style={{ marginTop: 50 }}>
+                <View style={{ marginTop: 30 }}>
                     <View style={styles.inputContainer}>
-                        <MaterialIcons style={{ marginHorizontal: 5 }} name="email" size={24} color="gray" />
+                        <MaterialIcons style={{ marginHorizontal: 5 }} name="email" size={24} color={colors.secondary} />
                         <TextInput
                             placeholder='Enter your email'
                             style={styles.textInput}
@@ -77,7 +78,7 @@ const login = () => {
                         />
                     </View>
                     <View style={styles.inputContainer}>
-                        <FontAwesome name="lock" size={26} color="gray" style={{ marginHorizontal: 5 }} />
+                        <FontAwesome name="lock" size={26}  color={colors.secondary} style={{ marginHorizontal: 5 }} />
                         <TextInput
                             placeholder='Enter your password'
                             style={styles.textInput}
@@ -89,25 +90,21 @@ const login = () => {
                     </View>
 
                     <View style={styles.bottomContainer}>
-                        <Text>Keep me logged in</Text>
+                        <Text style={styles.secondaryText}>Keep me logged in</Text>
                         <Text
                             style={{
-                                color: "#007FFF",
+                                color: "#32746d",
                                 fontWeight: "500"
                             }}
                         >Forgot password</Text>
                     </View>
 
-                    <View style={{ marginTop: 60 }} />
-                    <TouchableOpacity
-                        onPress={handleLogin}
-                        style={styles.loginButton}
-                    >
-                        <Text style={styles.loginButtonText}>Login</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => { router.replace("/register") }} style={{ marginTop: 12 }}>
-                        <Text style={styles.signupText}>Don't have an account? Sign up</Text>
-                    </TouchableOpacity>
+                    <View style={styles.buttonContainer}>
+                        <CustomedButton title="Login" handler={handleLogin} />
+                        <TouchableOpacity onPress={() => { router.replace("/register") }}>
+                            <Text style={styles.secondaryText}>Don't have an account? Sign up</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </KeyboardAvoidingView>
         </SafeAreaView>
@@ -119,16 +116,12 @@ export default login
 const styles = StyleSheet.create({
     safeAreaView: {
         flex: 1,
-        backgroundColor: 'white',
         alignItems: 'center'
-    },
-    container: {
-
     },
     heading: {
         fontSize: 36,
         fontWeight: 'bold',
-        color: '#0066B2'
+        color: colors.accent
     },
     subHeading: {
         fontSize: 16,
@@ -136,9 +129,8 @@ const styles = StyleSheet.create({
         marginTop: 20
     },
     textInput: {
-        color: 'gray',
         marginVertical: 10,
-        width: 300
+        width: 300,
     },
     inputContainer: {
         flexDirection: 'row',
@@ -155,23 +147,13 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         marginTop: 12
     },
-    loginButton: {
-        width: 200,
-        backgroundColor: "#6699CC",
-        padding: 15,
-        borderRadius: 10,
-        marginLeft: 'auto',
-        marginRight: 'auto'
+    buttonContainer: {
+        marginTop: 40,
+        alignItems: 'center',
+        gap: 20
     },
-    loginButtonText: {
-        color: "white",
-        fontWeight: 'bold',
-        fontSize: 16,
-        textAlign: 'center'
-    },
-    signupText: {
+    secondaryText: {
         color: "gray",
-        fontSize: 12,
-        textAlign: 'center'
+        fontSize: 13,
     }
 })

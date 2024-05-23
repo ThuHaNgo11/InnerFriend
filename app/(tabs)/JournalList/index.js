@@ -1,33 +1,15 @@
-import { StyleSheet, View, Image, Text, TouchableOpacity, FlatList } from "react-native";
-import React, { useState, useEffect } from "react";
+import { StyleSheet, View, Text, FlatList } from "react-native";
+import { Image } from "expo-image";
+import React, { useContext } from "react";
 import colors from '../../../constants/colors';
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
-import { useNavigation } from "expo-router";
 import { useRouter } from "expo-router";
-import FallbackScreen from "../../components/FallbackScreen";
+import FallbackScreen from "../../../components/FallbackScreen";
+import { JournalContext } from "../../../Context";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const index = () => {
-  const navigation = useNavigation();
   const router = useRouter();
-  const [journals, setJournals] = useState([]);
-
-  // fetch user data
-  useEffect(() => {
-    const fetchJournalData = async () => {
-      try {
-        const id = await AsyncStorage.getItem('id');
-        const res = await axios.get(`http://localhost:3000/user/${id}/journals`)
-
-        // array of journal objects
-        setJournals(res.data.journals);
-      } catch (error) {
-        console.log(error)
-      }
-    }
-
-    fetchJournalData();
-  }, []) // bug: don't load after adding new journal
+  const { journals } = useContext(JournalContext);
 
   const renderJournal = ({ item }) => (
     <View key={item.keyExtractor} style={styles.journalContainer}>
@@ -41,7 +23,8 @@ const index = () => {
                 id: item._id,
                 title: item.title,
                 content: item.content,
-                createdAt: item.createdAt
+                createdAt: item.createdAt,
+                image: item.imageUrl
               }
             })
           }}
@@ -64,23 +47,23 @@ const index = () => {
   )
 
   return (
-    <View style={styles.mainContainer}>
+    <SafeAreaView style={styles.mainContainer}>
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>Journals</Text>
       </View>
       {
         journals?.length ? (
-            <FlatList
-              data={journals}
-              renderItem={renderJournal}
-              keyExtractor={item => item._id}
-              contentContainerStyle={{ paddingBottom: 50 }}
-            />
+          <FlatList
+            data={journals}
+            renderItem={renderJournal}
+            keyExtractor={item => item._id}
+            contentContainerStyle={{ paddingBottom: 50 }}
+          />
         ) : (
           <FallbackScreen />
         )
       }
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -88,7 +71,8 @@ export default index;
 
 const styles = StyleSheet.create({
   mainContainer: {
-    flex: 1
+    flex: 1,
+    marginRight: 10
   },
   headerContainer: {
     flexDirection: 'row',

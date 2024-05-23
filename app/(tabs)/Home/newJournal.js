@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, TextInput, Alert, Image, TouchableOpacity } from 'react-native'
-import React, { useState, useEffect } from 'react'
-import CustomedButton from '../../components/CustomedButton';
+import React, { useState } from 'react'
+import CustomedButton from '../../../components/CustomedButton';
 import { Ionicons, FontAwesome5, Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import axios from 'axios';

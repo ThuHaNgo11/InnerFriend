@@ -1,9 +1,10 @@
-import { StyleSheet, Text, View, Image } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { AntDesign } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useLocalSearchParams } from 'expo-router';
 import colors from '../../../constants/colors';
+import { Image } from 'expo-image';
 
 const IndividualJournal = () => {
     const router = useRouter();
@@ -23,7 +24,7 @@ const IndividualJournal = () => {
                     numberOfLines={6}
                 >{params.content}</Text>
                 <Image
-                    source={require("../../../assets/image-placeholder.png")}
+                    source={params.image}
                     style={styles.journalImage}
                 />
             </View>

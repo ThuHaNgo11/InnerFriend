@@ -4,14 +4,7 @@ import colors from "../../constants/colors"
 
 export default function Layout() {
     return (
-        <Tabs
-            screenOptions={{
-                tabBarStyle: {
-                    position: 'absolute',
-                    bottom: -30
-                }
-            }}
-        >
+        <Tabs>
             <Tabs.Screen
                 name="Home"
                 options={{
