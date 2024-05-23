@@ -28,24 +28,24 @@ const index = () => {
     }, [])
 
     return (
-        <SafeAreaView>
-            <View style={styles.mainContainer}>
+        <SafeAreaView style={styles.mainContainer}>
+            <View style={styles.topContainer}>
                 <Image source={require("../../../assets/fallback.jpeg")} />
                 <Text style={styles.text}>Hello {userName},</Text>
                 <Text style={styles.text}>
                     What's on your mind?
                 </Text>
-                <View style={styles.secondaryContainer}>
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={() => { navigation.navigate('newJournal') }}
-                    >
-                        <Text style={styles.buttonText}>Writing</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button}>
-                        <Text style={styles.buttonText}>Reflecting</Text>
-                    </TouchableOpacity>
-                </View>
+            </View>
+            <View style={styles.buttonsContainer}>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => { navigation.navigate('newJournal') }}
+                >
+                    <Text style={styles.buttonText}>Writing</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button}>
+                    <Text style={styles.buttonText}>Reflecting</Text>
+                </TouchableOpacity>
             </View>
         </SafeAreaView>
     );
@@ -54,21 +54,29 @@ const index = () => {
 export default index;
 
 const styles = StyleSheet.create({
+    mainContainer: {
+        flex: 1,
+        gap: 40 // space bt text and buttons
+    },
+    topContainer:{
+        gap: 12,
+        alignItems: "center",
+        marginTop: 20
+    },
+    image:{ 
+        width: '100%'
+    },
     text: {
         color: "grey",
         fontWeight: "600",
         fontSize: 20,
         fontStyle: "italic",
     },
-    mainContainer: {
-        gap: 12,
-        alignItems: "center",
-    },
-    secondaryContainer: {
+    buttonsContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 12,
-        marginTop: 24
+        justifyContent: 'center',
+        gap: 12
     },
     button: {
         width: 120,

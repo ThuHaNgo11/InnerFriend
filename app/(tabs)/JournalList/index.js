@@ -37,9 +37,9 @@ const index = () => {
           numberOfLines={6}
         >{item.content}</Text>
         <Image
-          source={{
+          source={item.imageUrl ? {
             uri: item.imageUrl
-          }}
+          } : require('../../../assets/image-placeholder.png')}
           style={styles.journalImage}
         />
       </View>
@@ -48,16 +48,12 @@ const index = () => {
 
   return (
     <SafeAreaView style={styles.mainContainer}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerTitle}>Journals</Text>
-      </View>
       {
         journals?.length ? (
           <FlatList
             data={journals}
             renderItem={renderJournal}
             keyExtractor={item => item._id}
-            contentContainerStyle={{ paddingBottom: 50 }}
           />
         ) : (
           <FallbackScreen />
@@ -71,8 +67,7 @@ export default index;
 
 const styles = StyleSheet.create({
   mainContainer: {
-    flex: 1,
-    marginRight: 10
+    flex: 1
   },
   headerContainer: {
     flexDirection: 'row',
@@ -111,7 +106,7 @@ const styles = StyleSheet.create({
     fontSize: 15
   },
   journalImage: {
-    width: 105,
+    width: 110,
     height: 100,
     borderRadius: 7
   }

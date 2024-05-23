@@ -9,13 +9,13 @@ import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import { firebase } from "../../../firebase";
 import Spinner from 'react-native-loading-spinner-overlay';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const newJournal = () => {
     const date = new Date().toLocaleDateString('en-us', { weekday: "long", month: "long", day: "numeric" });
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [imageUri, setImageUri] = useState(null);
-    // const [imageUrl, setImageUrl] = useState(null);
     const [loading, setLoading] = useState(false);
 
     // const navigation = useNavigation();
@@ -74,6 +74,14 @@ const newJournal = () => {
     }
 
     const saveEntry = async () => {
+        if(title == ""){
+            Alert.alert('error', 'title is empty')
+            return;
+        }
+        if(content == ""){
+            Alert.alert('error', 'content is empty')
+            return;
+        }
         const uploadedUrl = await uploadFile();
         try {
             const journalData = {
@@ -87,15 +95,22 @@ const newJournal = () => {
 
             setLoading(false)
 
-            Alert.alert('Success', 'Journal saved', [{ text: 'OK', onPress: () => router.replace('/(tabs)/JournalList') }])
-
+            Alert.alert('Success', 'Journal saved', [{
+                text: 'OK', onPress: () => {
+                    router.navigate('/(tabs)/JournalList')
+                    // reset local states
+                    setTitle("");
+                    setContent("");
+                    setImageUri(null);
+                }
+            }])
         } catch (error) {
             console.log("Error", error)
         }
     }
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <View style={styles.headerContainer}>
                 <Ionicons
                     name="arrow-back"
@@ -137,7 +152,7 @@ const newJournal = () => {
                 textContent={'Saving...'}
                 textStyle={styles.spinnerTextStyle}
             />
-        </View>
+        </SafeAreaView>
     )
 }
 

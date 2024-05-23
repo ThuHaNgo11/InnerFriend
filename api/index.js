@@ -9,7 +9,7 @@ const util = require('util');
 const app = express();
 const port = 3000;
 const cors = require("cors");
-const {Readable} = require('readable-stream')
+const { Readable } = require('readable-stream')
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -123,7 +123,7 @@ app.post('/user/:userId/journals', async (req, res) => {
             title,
             content,
             createdAt: date,
-            imageUrl: uploadedUrl 
+            imageUrl: uploadedUrl
         });
 
         // add journal to the existing journals collection
@@ -149,7 +149,10 @@ app.post('/user/:userId/journals', async (req, res) => {
 app.get("/user/:userId/journals", async (req, res) => {
     try {
         const userId = req.params.userId;
-        const user = await User.findById(userId).populate("journals");
+        const user = await User.findById(userId).populate({
+            path: "journals",
+            options: { sort: { createdAt: -1 } }, // Sort by createdAt field in descending order, doesn't work !!
+        });
 
         if (!user) {
             return res.status(404).json({ error: "user not found" })
@@ -157,6 +160,7 @@ app.get("/user/:userId/journals", async (req, res) => {
 
         res.status(200).json({ journals: user.journals });
     } catch (error) {
+        console.log(error)
         res.status(500).json({ error: "Something went wrong :(" })
     }
 })
@@ -171,7 +175,7 @@ app.get("journals/:journalId", async (req, res) => {
             return res.status(404).json({ error: "journal not found" })
         }
 
-        res.status(200).json({ journal});
+        res.status(200).json({ journal });
     } catch (error) {
         console.log(error)
         res.status(500).json({ error: "Can't get journal" })
