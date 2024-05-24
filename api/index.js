@@ -41,7 +41,6 @@ app.listen(port, () => {
 const User = require("./models/user")
 const Journal = require("./models/journal")
 
-// endpoints
 // Register 
 app.post("/register", async (req, res) => {
     try {
@@ -145,7 +144,6 @@ app.post('/user/:userId/journals', async (req, res) => {
 })
 
 // fetch journals 
-// how to sort and display the newest journal first
 app.get("/user/:userId/journals", async (req, res) => {
     try {
         const userId = req.params.userId;
@@ -155,6 +153,7 @@ app.get("/user/:userId/journals", async (req, res) => {
             return res.status(404).json({ error: "user not found" })
         }
 
+        // Return an array with the newest journal first
         const journalArr = user.journals.reverse();
         res.status(200).json({ journals: journalArr });
     } catch (error) {
@@ -164,7 +163,7 @@ app.get("/user/:userId/journals", async (req, res) => {
 })
 
 //get individual journal
-app.get("journals/:journalId", async (req, res) => {
+app.get("/journals/:journalId", async (req, res) => {
     try {
         const journalId = req.params.journalId;
         const journal = await Journal.findById(journalId);
@@ -181,9 +180,17 @@ app.get("journals/:journalId", async (req, res) => {
 })
 
 // delete journal by id
-app.delete("/journals/:journalId", async (req, res) => {
+app.delete("/user/:userId/journals/:journalId", async (req, res) => {
     try {
         await Journal.findByIdAndDelete(req.params.journalId);
+
+        // delete the journal id in the array journals of User
+        const user = await User.findById(req.params.userId);
+        if (!user) {
+            res.status(404).json({ error: "user not found" })
+        }
+        user.journals = user.journals.filter((idObj) => idObj.toString() !== req.params.journalId)
+        await user.save()
 
         res.status(204).json({ message: "journal deleted" });
     } catch (error) {

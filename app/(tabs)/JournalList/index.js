@@ -8,14 +8,17 @@ import { JournalContext } from "../../../Context/JournalContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from '@expo/vector-icons';
 import axios from "axios";
+import { UserContext } from "../../../Context/UserContext";
 
 const index = () => {
   const router = useRouter();
   const { journals } = useContext(JournalContext);
+  const { user } = useContext(UserContext)
 
   const handleDeleteJournal = async (id) => {
+    const userId = user?._id
     try {
-      await axios.delete(`http://localhost:3000/journals/${id}`)
+      await axios.delete(`http://localhost:3000/user/${userId}/journals/${id}`)
     } catch (error) {
       console.log('Error:', error);
     }

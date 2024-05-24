@@ -37,7 +37,7 @@ const login = () => {
         checkLoginStatus();
     }, [])
 
-    // test user: Ha@gmail.com - 1234
+    // test user: ha@gmail.com - 1234
 
     const handleLogin = () => {
         const user = {

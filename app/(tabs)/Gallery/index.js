@@ -3,14 +3,14 @@ import { Image } from "expo-image";
 import React, { useContext } from "react";
 import colors from '../../../constants/colors';
 import { useRouter } from "expo-router";
-import FallbackScreen from "../../../components/FallbackScreen";
+import GalleryFallback from "../../../components/GalleryFallback";
 import { JournalContext } from "../../../Context/JournalContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const index = () => {
     const router = useRouter();
     const { journals } = useContext(JournalContext);
-    const journalsWithImg = journals.filter(journal =>         journal.imageUrl !== "" )
+    const journalsWithImg = journals.filter((journal) =>         journal.imageUrl !== "" )
 
     const renderImg = ({ item }) => (
         <TouchableOpacity
@@ -49,7 +49,7 @@ const index = () => {
                         />
                     </View>
                 ) : (
-                    <FallbackScreen />
+                    <GalleryFallback />
                 )
             }
         </SafeAreaView>

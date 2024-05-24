@@ -3,10 +3,11 @@ import React, { useContext } from "react";
 import colors from '../../../constants/colors';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { UserContext } from "../../../Context/UserContext";
+import { useRouter } from "expo-router";
 
 const index = () => {
     const { user } = useContext(UserContext)
-    
+    const router = useRouter();
     return (
         <SafeAreaView style={styles.mainContainer}>
             <View style={styles.topContainer}>
@@ -19,7 +20,7 @@ const index = () => {
             <View style={styles.buttonsContainer}>
                 <TouchableOpacity
                     style={styles.button}
-                    onPress={() => { navigation.navigate('newJournal') }}
+                    onPress={() => { router.push('/Home/newJournal') }}
                 >
                     <Text style={styles.buttonText}>Writing</Text>
                 </TouchableOpacity>

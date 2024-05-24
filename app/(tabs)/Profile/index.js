@@ -1,12 +1,15 @@
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, {useContext} from 'react'
 import { Image } from 'expo-image'
+import { UserContext } from "../../../Context/UserContext";
 
 const index = () => {
+  const { user } = useContext(UserContext)
   return (
     <SafeAreaView>
       <Image />
-      <Text></Text>
+      <Text>{user?.name}</Text>
+      <Text>{user?.email}</Text>
     </SafeAreaView>
   )
 }
