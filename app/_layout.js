@@ -1,9 +1,8 @@
 // a template for the layout of navigator and also 
 // responsible for rendering elements like the header.
 
-import { useState, useEffect } from "react";
 import { Redirect, Stack } from "expo-router";
-import { JournalData } from "../Context";
+import { JournalData } from "../Context/JournalContext";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function Layout() {

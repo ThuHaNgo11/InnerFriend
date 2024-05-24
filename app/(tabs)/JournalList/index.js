@@ -1,34 +1,49 @@
-import { StyleSheet, View, Text, FlatList } from "react-native";
+import { StyleSheet, View, Text, FlatList, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
 import React, { useContext } from "react";
 import colors from '../../../constants/colors';
 import { useRouter } from "expo-router";
 import FallbackScreen from "../../../components/FallbackScreen";
-import { JournalContext } from "../../../Context";
+import { JournalContext } from "../../../Context/JournalContext";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Feather } from '@expo/vector-icons';
+import axios from "axios";
 
 const index = () => {
   const router = useRouter();
   const { journals } = useContext(JournalContext);
 
+  const handleDeleteJournal = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3000/journals/${id}`)
+    } catch (error) {
+      console.log('Error:', error);
+    }
+  }
+
   const renderJournal = ({ item }) => (
     <View key={item.keyExtractor} style={styles.journalContainer}>
       <View style={styles.journalHeaderContainer}>
-        <Text
-          style={styles.journalTitle}
-          onPress={() => {
-            router.push({
-              pathname: "/JournalList/individualJournal",
-              params: {
-                id: item._id,
-                title: item.title,
-                content: item.content,
-                createdAt: item.createdAt,
-                image: item.imageUrl
-              }
-            })
-          }}
-        >{item.title}</Text>
+        <View style={styles.journalTitleContainer}>
+          <Text
+            style={styles.journalTitle}
+            onPress={() => {
+              router.push({
+                pathname: "/JournalList/individualJournal",
+                params: {
+                  id: item._id,
+                  title: item.title,
+                  content: item.content,
+                  createdAt: item.createdAt,
+                  image: item.imageUrl
+                }
+              })
+            }}
+          >{item.title}</Text>
+          <TouchableOpacity onPress={() => handleDeleteJournal(item._id)}>
+            <Feather name="trash-2" size={18} color="black" />
+          </TouchableOpacity>
+        </View>
         <Text style={styles.journalDate}>{item.createdAt}</Text>
       </View>
       <View style={styles.journalBodyContainer}>
@@ -84,12 +99,17 @@ const styles = StyleSheet.create({
     padding: 15
   },
   journalHeaderContainer: {
+    width: '100%',
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+  },
+  journalTitleContainer: {
+    flexDirection: 'row',
+    gap: 10,
+    width: '70%',
   },
   journalTitle: {
     fontSize: 20,
-    width: '70%',
     color: colors.accent
   },
   journalDate: {

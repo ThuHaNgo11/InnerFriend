@@ -1,10 +1,12 @@
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
+import { Image } from 'expo-image'
 
 const index = () => {
   return (
     <SafeAreaView>
-      <Text>index</Text>
+      <Image />
+      <Text></Text>
     </SafeAreaView>
   )
 }

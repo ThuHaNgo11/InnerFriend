@@ -149,16 +149,14 @@ app.post('/user/:userId/journals', async (req, res) => {
 app.get("/user/:userId/journals", async (req, res) => {
     try {
         const userId = req.params.userId;
-        const user = await User.findById(userId).populate({
-            path: "journals",
-            options: { sort: { createdAt: -1 } }, // Sort by createdAt field in descending order, doesn't work !!
-        });
+        const user = await User.findById(userId).populate('journals');
 
         if (!user) {
             return res.status(404).json({ error: "user not found" })
         }
 
-        res.status(200).json({ journals: user.journals });
+        const journalArr = user.journals.reverse();
+        res.status(200).json({ journals: journalArr });
     } catch (error) {
         console.log(error)
         res.status(500).json({ error: "Something went wrong :(" })
@@ -179,5 +177,29 @@ app.get("journals/:journalId", async (req, res) => {
     } catch (error) {
         console.log(error)
         res.status(500).json({ error: "Can't get journal" })
+    }
+})
+
+// delete journal by id
+app.delete("/journals/:journalId", async (req, res) => {
+    try {
+        await Journal.findByIdAndDelete(req.params.journalId);
+
+        res.status(204).json({ message: "journal deleted" });
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ error: "Can't delete journal" })
+    }
+})
+
+// edit journal
+app.put("/journals/:journalId", async (req, res) => {
+    try {
+        await Journal.findByIdAndUpdate(req.params.journalId, req.body);
+
+        res.status(204).json({ message: "journal deleted" });
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ error: "Can't delete journal" })
     }
 })

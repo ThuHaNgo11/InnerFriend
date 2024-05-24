@@ -4,12 +4,13 @@ import React, { useContext } from "react";
 import colors from '../../../constants/colors';
 import { useRouter } from "expo-router";
 import FallbackScreen from "../../../components/FallbackScreen";
-import { JournalContext } from "../../../Context";
+import { JournalContext } from "../../../Context/JournalContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const index = () => {
     const router = useRouter();
     const { journals } = useContext(JournalContext);
+    const journalsWithImg = journals.filter(journal =>         journal.imageUrl !== "" )
 
     const renderImg = ({ item }) => (
         <TouchableOpacity
@@ -37,11 +38,11 @@ const index = () => {
     return (
         <SafeAreaView style={styles.mainContainer}>
             {
-                journals?.length ? (
+                journalsWithImg?.length ? (
                     <View style={styles.innerContainer}>
                         <Text>Photos</Text>
                         <FlatList
-                            data={journals}
+                            data={journalsWithImg}
                             renderItem={renderImg}
                             keyExtractor={item => item._id}
                             numColumns={3}

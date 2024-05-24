@@ -42,9 +42,8 @@ const newJournal = () => {
     }
 
     const uploadFile = async () => {
-        setLoading(true)
         try {
-            const { uri } = await FileSystem.getInfoAsync(imageUri);
+            const { uri } =  await FileSystem.getInfoAsync(imageUri);
 
             if (!uri) {
                 throw new Error("Invalid file Uri");
@@ -82,7 +81,8 @@ const newJournal = () => {
             Alert.alert('error', 'content is empty')
             return;
         }
-        const uploadedUrl = await uploadFile();
+        setLoading(true)
+        const uploadedUrl = imageUri ? await uploadFile() : "";
         try {
             const journalData = {
                 title,
