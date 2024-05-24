@@ -1,37 +1,17 @@
 import { StyleSheet, View, Image, Text, TouchableOpacity } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useContext } from "react";
 import colors from '../../../constants/colors';
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
-import { useNavigation } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { UserContext } from "../../../Context/UserContext";
 
 const index = () => {
-    const [userName, setUserName] = useState("");
-    const navigation = useNavigation();
-
-    // fetch user data
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const id = await AsyncStorage.getItem('id');
-                // console.log("Retrieved id: " + id);
-                const res = await axios.get(`http://localhost:3000/user/${id}`);
-                // console.log(res.data.name)
-                setUserName(res.data.name);
-            } catch (error) {
-                console.log(error)
-            }
-        }
-
-        fetchUserData();
-    }, [])
-
+    const { user } = useContext(UserContext)
+    
     return (
         <SafeAreaView style={styles.mainContainer}>
             <View style={styles.topContainer}>
                 <Image source={require("../../../assets/fallback.jpeg")} />
-                <Text style={styles.text}>Hello {userName},</Text>
+                <Text style={styles.text}>Hello {user?.name},</Text>
                 <Text style={styles.text}>
                     What's on your mind?
                 </Text>
@@ -58,12 +38,12 @@ const styles = StyleSheet.create({
         flex: 1,
         gap: 40 // space bt text and buttons
     },
-    topContainer:{
+    topContainer: {
         gap: 12,
         alignItems: "center",
         marginTop: 20
     },
-    image:{ 
+    image: {
         width: '100%'
     },
     text: {
