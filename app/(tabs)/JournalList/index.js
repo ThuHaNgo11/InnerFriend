@@ -9,6 +9,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from '@expo/vector-icons';
 import axios from "axios";
 import { UserContext } from "../../../Context/UserContext";
+import CustomedButton from "../../../components/CustomedButton";
+import FloatingActionButton from "../../../components/FloatingActionButton";
 
 const index = () => {
   const router = useRouter();
@@ -68,11 +70,14 @@ const index = () => {
     <SafeAreaView style={styles.mainContainer}>
       {
         journals?.length ? (
-          <FlatList
-            data={journals}
-            renderItem={renderJournal}
-            keyExtractor={item => item._id}
-          />
+          <>
+            <FlatList
+              data={journals}
+              renderItem={renderJournal}
+              keyExtractor={item => item._id}
+            />
+            <CustomedButton title="add another" handler={() => {router.replace('/(tabs)/Home/newJournal')}}/>
+          </>
         ) : (
           <FallbackScreen />
         )
@@ -104,11 +109,12 @@ const styles = StyleSheet.create({
   journalHeaderContainer: {
     width: '100%',
     flexDirection: 'row',
+    gap: 5,
     justifyContent: 'space-between',
   },
   journalTitleContainer: {
     flexDirection: 'row',
-    gap: 10,
+    gap: 5,
     width: '70%',
   },
   journalTitle: {

@@ -30,7 +30,6 @@ const register = () => {
             password: password
         }
         axios.post("http://localhost:3000/register", user).then((response) => {
-            console.log(response);
             Alert.alert('Success', 'Register User Sucessfully');
             setUserName("");
             setEmail("");

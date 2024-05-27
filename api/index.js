@@ -9,7 +9,6 @@ const util = require('util');
 const app = express();
 const port = 3000;
 const cors = require("cors");
-const { Readable } = require('readable-stream')
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -17,21 +16,11 @@ app.use(busboy());
 app.use(bodyParser.json());
 const jwt = require("jsonwebtoken")
 
-mongoose.connect("mongodb+srv://21520131:ttFlCRmjHJ8KkGV3@cluster0.8c3rx6z.mongodb.net/").then(() => {
+mongoose.connect(process.env.MONGODB_URL).then(() => {
     console.log("Connected to Mongodb")
 }).catch(e => {
-    console.log("Error connecting to Mongodb", e)
+    console.log("Error connecting to Mongodb: ", e)
 })
-
-// cloudinary
-cloudinary.config({
-    // cloud_name: process.env.CLOUD_NAME,
-    // api_key: process.env.API_KEY,
-    // api_secret: process.env.API_SECRET,
-    cloud_name: "innerfriendv2",
-    api_key: "978813519436797",
-    api_secret: "5COTqkKSCi0iBnl3k-5y8Ezrmfw",
-});
 
 app.listen(port, () => {
     console.log("Server is running on port 3000")

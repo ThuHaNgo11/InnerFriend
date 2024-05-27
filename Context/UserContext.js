@@ -22,7 +22,7 @@ const UserData = ({ children }) => {
         }
 
         fetchUserData();
-    }, [])
+    }, []) // bug: journal added but number of journal in profile screen doesn't change
 
     return (
         <UserContext.Provider

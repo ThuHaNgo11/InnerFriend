@@ -21,22 +21,6 @@ const login = () => {
     const [password, setPassword] = useState("");
     const router = useRouter();
 
-    // if token has not expired 
-    useEffect(() => {
-        const checkLoginStatus = async () => {
-            try {
-                const token = AsyncStorage.getItem('authToken');
-                if(token){
-                    router.replace("/(tabs)/Home")
-                }
-            } catch (error) {
-                console.log(error)
-            }
-        }
-
-        checkLoginStatus();
-    }, [])
-
     // test user: ha@gmail.com - 1234
 
     const handleLogin = () => {
