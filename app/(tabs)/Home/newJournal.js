@@ -17,8 +17,6 @@ const newJournal = () => {
     const [content, setContent] = useState("");
     const [imageUri, setImageUri] = useState(null);
     const [loading, setLoading] = useState(false);
-
-    // const navigation = useNavigation();
     const router = useRouter();
 
     const pickImage = async () => {
@@ -34,12 +32,6 @@ const newJournal = () => {
             setImageUri(result.assets[0].uri);
         }
     };
-
-
-    const deleteImage = async () => {
-        setImageUri(null);
-        // delete uploaded image on cloudinary
-    }
 
     const uploadFile = async () => {
         try {
@@ -121,14 +113,13 @@ const newJournal = () => {
                 <Text style={styles.journalDate}>{date}</Text>
             </View>
             <TextInput
-                // make this field required
                 style={styles.titleInput}
                 placeholder="Title"
                 value={title}
                 onChangeText={setTitle}
+                multiline
             />
             <TextInput
-                // make this field required
                 style={styles.contentInput}
                 placeholder="Content"
                 value={content}
@@ -139,7 +130,7 @@ const newJournal = () => {
             {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
             <View style={styles.buttonContainer}>
                 {imageUri ? (
-                    <TouchableOpacity onPress={deleteImage}>
+                    <TouchableOpacity onPress={() => setImageUri(null)}>
                         <Feather name="trash-2" size={24} color="black" />
                     </TouchableOpacity>
                 ) : (<TouchableOpacity onPress={pickImage}>
@@ -187,7 +178,7 @@ const styles = StyleSheet.create({
     },
     image: {
         width: '100%',
-        height: 180,
+        height: 220,
         borderRadius: 10
     },
     buttonContainer: {

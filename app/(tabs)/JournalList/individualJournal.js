@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native'
+
+import { StyleSheet, Text, View, ScrollView } from 'react-native'
 import React from 'react'
 import { AntDesign } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -12,22 +13,22 @@ const IndividualJournal = () => {
     const params = useLocalSearchParams();
     return (
         <SafeAreaView style={styles.mainContainer}>
-            <View style={styles.headerContainer}>
-                <AntDesign onPress={() => { router.back() }} name="arrowleft" size={24} color="black" />
-            </View>
-            <View style={styles.bodyContainer}>
-                <View style={styles.journalHeaderContainer}>
-                    <Text style={styles.journalTitle}>{params.title}</Text>
+            <ScrollView>
+                <View style={styles.headerContainer}>
+                    <AntDesign onPress={() => { router.back() }} name="arrowleft" size={24} color="black" />
                     <Text style={styles.journalDate}>{params.createdAt}</Text>
                 </View>
-                <Text
-                    style={styles.journalContent}
-                >{params.content}</Text>
-                <Image
-                    source={params.image}
-                    style={styles.journalImage}
-                />
-            </View>
+                <View style={styles.bodyContainer}>
+                    <Text style={styles.journalTitle}>{params.title}</Text>
+                    <Text
+                        style={styles.journalContent}
+                    >{params.content}</Text>
+                    <Image
+                        source={params.image}
+                        style={styles.journalImage}
+                    />
+                </View>
+            </ScrollView>
         </SafeAreaView>
     )
 }
@@ -41,6 +42,7 @@ const styles = StyleSheet.create({
     headerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'space-between',
         paddingHorizontal: 10,
         marginTop: 10
     },
@@ -49,13 +51,9 @@ const styles = StyleSheet.create({
         gap: 10,
         padding: 15
     },
-    journalHeaderContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between'
-    },
     journalTitle: {
         fontSize: 20,
-        width: '70%',
+        width: '100%',
         color: colors.accent
     },
     journalDate: {

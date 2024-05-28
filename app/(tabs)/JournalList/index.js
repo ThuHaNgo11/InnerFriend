@@ -6,11 +6,10 @@ import { useRouter } from "expo-router";
 import FallbackScreen from "../../../components/FallbackScreen";
 import { JournalContext } from "../../../Context/JournalContext";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Feather } from '@expo/vector-icons';
+import { Feather, Entypo } from '@expo/vector-icons';
 import axios from "axios";
 import { UserContext } from "../../../Context/UserContext";
-import CustomedButton from "../../../components/CustomedButton";
-import FloatingActionButton from "../../../components/FloatingActionButton";
+
 
 const index = () => {
   const router = useRouter();
@@ -29,26 +28,23 @@ const index = () => {
   const renderJournal = ({ item }) => (
     <View key={item.keyExtractor} style={styles.journalContainer}>
       <View style={styles.journalHeaderContainer}>
-        <View style={styles.journalTitleContainer}>
-          <Text
-            style={styles.journalTitle}
-            onPress={() => {
-              router.push({
-                pathname: "/JournalList/individualJournal",
-                params: {
-                  id: item._id,
-                  title: item.title,
-                  content: item.content,
-                  createdAt: item.createdAt,
-                  image: item.imageUrl
-                }
-              })
-            }}
-          >{item.title}</Text>
-          <TouchableOpacity onPress={() => handleDeleteJournal(item._id)}>
+        <Text
+          style={styles.journalTitle}
+          onPress={() => {
+            router.push({
+              pathname: "/JournalList/individualJournal",
+              params: {
+                id: item._id,
+                title: item.title,
+                content: item.content,
+                createdAt: item.createdAt,
+                image: item.imageUrl
+              }
+            })
+          }}
+        >{item.title} <TouchableOpacity onPress={() => handleDeleteJournal(item._id)}>
             <Feather name="trash-2" size={18} color="black" />
-          </TouchableOpacity>
-        </View>
+          </TouchableOpacity></Text>
         <Text style={styles.journalDate}>{item.createdAt}</Text>
       </View>
       <View style={styles.journalBodyContainer}>
@@ -71,12 +67,19 @@ const index = () => {
       {
         journals?.length ? (
           <>
+            <View style={styles.headerContainer}>
+              <Text style={styles.headerTitle}>Journal</Text>
+              <TouchableOpacity
+                onPress={() => { router.replace('/(tabs)/Home/newJournal') }}
+              >
+                <Entypo name="new-message" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
             <FlatList
               data={journals}
               renderItem={renderJournal}
               keyExtractor={item => item._id}
             />
-            <CustomedButton title="add another" handler={() => {router.replace('/(tabs)/Home/newJournal')}}/>
           </>
         ) : (
           <FallbackScreen />
@@ -96,7 +99,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 10,
-    marginTop: 10
+    justifyContent: 'space-between',
+    marginBottom: 10
   },
   headerTitle: {
     fontSize: 20
@@ -109,17 +113,12 @@ const styles = StyleSheet.create({
   journalHeaderContainer: {
     width: '100%',
     flexDirection: 'row',
-    gap: 5,
-    justifyContent: 'space-between',
-  },
-  journalTitleContainer: {
-    flexDirection: 'row',
-    gap: 5,
-    width: '70%',
+    gap: 5
   },
   journalTitle: {
     fontSize: 20,
-    color: colors.accent
+    color: colors.accent,
+    width: '68%',
   },
   journalDate: {
     fontStyle: 'italic',
