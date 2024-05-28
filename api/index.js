@@ -33,7 +33,7 @@ const Journal = require("./models/journal")
 // Register 
 app.post("/register", async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, createdAt } = req.body;
 
         ///check if email is already registered
         const existingUser = await User.findOne({ email });
@@ -45,6 +45,7 @@ app.post("/register", async (req, res) => {
             name,
             email,
             password,
+            createdAt
         });
 
         await newUser.save();
@@ -96,6 +97,19 @@ app.get('/user/:id', async (req, res) => {
             return res.status(404).send({ error: 'User not found' });
         }
         res.status(200).send(user);
+    } catch (error) {
+        res.status(500).send({ error: error.toString() })
+    }
+})
+
+// update user profile image
+app.put('/user/:id', async (req, res) => {
+    try {
+        const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {new: true}); // option: {new: true} returns the updated user
+        if (!updatedUser) {
+            return res.status(404).send({ error: 'User not found' });
+        }
+        res.status(200).send(updatedUser);
     } catch (error) {
         res.status(500).send({ error: error.toString() })
     }
@@ -193,7 +207,7 @@ app.put("/journals/:journalId", async (req, res) => {
     try {
         await Journal.findByIdAndUpdate(req.params.journalId, req.body);
 
-        res.status(204).json({ message: "journal deleted" });
+        res.status(204).json({ message: "journal updated"});
     } catch (error) {
         console.log(error)
         res.status(500).json({ error: "Can't delete journal" })

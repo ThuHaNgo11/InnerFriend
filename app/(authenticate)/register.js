@@ -22,23 +22,28 @@ const register = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const router = useRouter();
+    const date = new Date().toLocaleDateString('en-us', { month: "long", day: "numeric", year: "numeric" });
 
-    const handleRegister = () => {
+    const handleRegister = async () => {
         const user = {
             name: userName,
             email: email,
-            password: password
+            password: password,
+            createdAt: date
         }
-        axios.post("http://localhost:3000/register", user).then((response) => {
+
+        try {
+            await axios.post("http://localhost:3000/register", user)
+
             Alert.alert('Success', 'Register User Sucessfully');
             setUserName("");
             setEmail("");
             setPassword("");
             router.replace("/login")
-        }).catch((e) => {
+        } catch (e) {
             Alert.alert('Error', 'Register User Unsucessfully');
             console.log(e)
-        })
+        }
     }
     return (
         <SafeAreaView style={styles.safeAreaView}>
@@ -52,7 +57,7 @@ const register = () => {
 
                 <View style={{ marginTop: 30 }}>
                     <View style={styles.inputContainer}>
-                        <Ionicons style={{ marginHorizontal: 5 }} name="person" size={24}  color={colors.secondary} />
+                        <Ionicons style={{ marginHorizontal: 5 }} name="person" size={24} color={colors.secondary} />
                         <TextInput
                             placeholder='Enter your name'
                             style={styles.textInput}
@@ -62,7 +67,7 @@ const register = () => {
                         />
                     </View>
                     <View style={styles.inputContainer}>
-                        <MaterialIcons style={{ marginHorizontal: 5 }} name="email" size={24}  color={colors.secondary} />
+                        <MaterialIcons style={{ marginHorizontal: 5 }} name="email" size={24} color={colors.secondary} />
                         <TextInput
                             placeholder='Enter your email'
                             style={styles.textInput}
@@ -72,7 +77,7 @@ const register = () => {
                         />
                     </View>
                     <View style={styles.inputContainer}>
-                        <FontAwesome name="lock" size={26}  color={colors.secondary} style={{ marginHorizontal: 5 }} />
+                        <FontAwesome name="lock" size={26} color={colors.secondary} style={{ marginHorizontal: 5 }} />
                         <TextInput
                             placeholder='Enter your password'
                             style={styles.textInput}

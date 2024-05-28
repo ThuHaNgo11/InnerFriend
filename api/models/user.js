@@ -21,11 +21,11 @@ const userSchema = new mongoose.Schema({
         }
     ],
     createdAt: {
-        type: Date,
-        default: Date.now
+        type: String
     },
     profilePhotoUrl: {
-        type: String
+        type: String,
+        default: null
     }
 })
 

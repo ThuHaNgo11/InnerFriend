@@ -5,16 +5,17 @@ import { UserContext } from "../../../Context/UserContext";
 import CustomedButton from '../../../components/CustomedButton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import { Feather } from '@expo/vector-icons';
+import { Feather, AntDesign } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import { firebase } from "../../../firebase";
 import Spinner from 'react-native-loading-spinner-overlay';
+import colors from '../../../constants/colors';
 
 const index = () => {
   const { user } = useContext(UserContext)
   const router = useRouter();
-  const [imageUri, setImageUri] = useState(null)
+  const [imageUri, setImageUri] = useState(user.profilePhotoUrl)
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -30,7 +31,39 @@ const index = () => {
     }
   };
 
-  const handleProfileImg = async () => {
+  const uploadFile = async () => {
+    try {
+      const { uri } = await FileSystem.getInfoAsync(imageUri);
+
+      if (!uri) {
+        throw new Error("Invalid file Uri");
+      }
+
+      const blob = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = () => {
+          resolve(xhr.response);
+        }
+        xhr.onerror = (e) => {
+          reject(new TypeError("Network request failed"));
+        }
+        xhr.responseType = "blob";
+        xhr.open("GET", uri, true);
+        xhr.send(null)
+      })
+
+      const filename = imageUri.substring(imageUri.lastIndexOf("/") + 1);
+      const ref = firebase.storage().ref().child(filename);
+      await ref.put(blob);
+      const downloadUrl = await ref.getDownloadURL();
+      return downloadUrl;
+    } catch (error) {
+      console.log("Error: ", error)
+    }
+  }
+
+  const saveProfileImg = async () => {
+
   }
 
   const handleLogout = async () => {
@@ -53,17 +86,26 @@ const index = () => {
             <>
               <Image
                 source={{
-                  uri: imageUri
+                  uri: user.profilePhotoUrl
                 }}
                 style={styles.image}
               />
-              <TouchableOpacity onPress={() => setImageUri(null)}>
+              <TouchableOpacity
+                onPress={() => setImageUri(null)}
+                style={styles.imageButton}
+              >
                 <Feather
                   name="trash-2"
                   size={24}
                   color="gray"
                   style={styles.icon}
                 />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setImageUri(null)}
+                style={styles.imageButton}
+              >
+                <AntDesign name="check" size={24} color="black" />
               </TouchableOpacity>
             </>
           ) : (
@@ -74,6 +116,7 @@ const index = () => {
               />
               <TouchableOpacity
                 onPress={pickImage}
+                style={styles.imageButton}
               >
                 <Feather
                   name="camera"
@@ -86,11 +129,10 @@ const index = () => {
           )
         }
       </View>
-      <Text>{user.name}</Text>
-      <Text>{user.email}</Text>
-      <Text>Number of journal: {user.journals.length}</Text>
-      {/* <Text>Number of photos: </Text> */}
-      <Text>Created at: {user.createdAt}</Text>
+      <Text style={styles.heading}>{user.name}</Text>
+      <Text style={styles.body}>{user.email}</Text>
+      <Text style={styles.body}>Number of journal: {user.journals.length}</Text>
+      <Text style={[styles.body, { marginBottom: 10 }]}>Created at: {user.createdAt}</Text>
       <CustomedButton title="Log out" handler={() => handleLogout()} />
     </SafeAreaView>
   )
@@ -105,14 +147,29 @@ const styles = StyleSheet.create({
     gap: 10
   },
   image: {
-    height: 150,
-    width: 150,
-    borderRadius: 100,
+    height: 400,
+    width: 360,
+    borderRadius: 15,
     marginTop: 50
   },
-  icon: {
+  imageButton: {
+    backgroundColor: colors.primary,
+    opacity: 0.8,
+    height: 40,
+    width: 40,
+    borderRadius: 100,
     position: 'absolute',
     right: 8,
-    bottom: 5
+    bottom: 5,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  heading: {
+    fontSize: 30,
+    fontWeight: 'semibold'
+  },
+  body: {
+    fontSize: 16,
+    color: 'gray'
   }
 })
