@@ -16,8 +16,8 @@ import axios from 'axios';
 const index = () => {
   const { user, setLoadedUser } = useContext(UserContext)
   const router = useRouter();
-  const [imageUri, setImageUri] = useState(user?.profilePhotoUrl)
-  const [imageUrl, setImageUrl] = useState(user?.profilePhotoUrl)
+  const [imageUri, setImageUri] = useState(null)
+  const [imageUrl, setImageUrl] = useState(user.profilePhotoUrl)
   const [loading, setLoading] = useState(false);
 
   const pickImage = async () => {
@@ -31,6 +31,21 @@ const index = () => {
     if (!result.canceled) {
       //imageUri is the local path to image
       setImageUri(result.assets[0].uri);
+    }
+  };
+
+  const pickUpdateImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3], //only on Android
+      quality: 1,
+    });
+    if (!result.canceled) {
+      //imageUri is the local path to image
+      setImageUri(result.assets[0].uri);
+      setImageUrl(null);
     }
   };
 
@@ -73,7 +88,6 @@ const index = () => {
       await axios.put(`http://localhost:3000/user/${id}/`, { profilePhotoUrl: uploadedUrl })
       setLoading(false);
       setLoadedUser(false);
-
       // use toast is better
       Alert.alert('Success', 'Save profile photo')
     } catch (error) {
@@ -101,7 +115,7 @@ const index = () => {
             <>
               <Image
                 source={{
-                  uri: imageUri || imageUrl
+                  uri: user.profilePhotoUrl
                 }}
                 style={styles.image}
               />
@@ -117,14 +131,6 @@ const index = () => {
                     style={styles.icon}
                   />
                 </TouchableOpacity>
-                {
-                  imageUri && <TouchableOpacity
-                    onPress={saveProfileImg}
-                    style={styles.imageButton}
-                  >
-                    <AntDesign name="check" size={24} color="gray" />
-                  </TouchableOpacity>
-                }
               </View>
             </>
           ) : (
@@ -138,7 +144,7 @@ const index = () => {
                 />
                 <View style={styles.imageButtonContainer}>
                   <TouchableOpacity
-                    onPress={pickImage}
+                    onPress={pickUpdateImage}
                     style={styles.imageButton}
                   >
                     <Feather

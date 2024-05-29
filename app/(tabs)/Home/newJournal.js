@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, TextInput, Alert, Image, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import CustomedButton from '../../../components/CustomedButton';
 import { Ionicons, FontAwesome5, Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -10,6 +10,8 @@ import * as FileSystem from 'expo-file-system';
 import { firebase } from "../../../firebase";
 import Spinner from 'react-native-loading-spinner-overlay';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { JournalContext } from '../../../Context/JournalContext';
+import { UserContext } from '../../../Context/UserContext';
 
 const newJournal = () => {
     const date = new Date().toLocaleDateString('en-us', { weekday: "long", month: "long", day: "numeric" });
@@ -18,6 +20,8 @@ const newJournal = () => {
     const [imageUri, setImageUri] = useState(null);
     const [loading, setLoading] = useState(false);
     const router = useRouter();
+    const {setLoadedData} = useContext(JournalContext)
+    const {setLoadedUser} = useContext(UserContext)
 
     const pickImage = async () => {
         // No permissions request is necessary for launching the image library
@@ -86,6 +90,8 @@ const newJournal = () => {
             await axios.post(`http://localhost:3000/user/${id}/journals`, journalData)
 
             setLoading(false)
+            setLoadedData(false)
+            setLoadedUser(false)
 
             Alert.alert('Success', 'Journal saved', [{
                 text: 'OK', onPress: () => {

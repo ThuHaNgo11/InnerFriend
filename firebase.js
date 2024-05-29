@@ -1,9 +1,11 @@
 import { initializeApp } from "firebase/app";
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/storage'
+import {REACT_APP_FIREBASE_API_KEY} from 'react-native-dotenv';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCCIIJWJUNTmtYmq8Q03NOVpcQAtsSUS3E",
+  // apiKey: "AIzaSyCCIIJWJUNTmtYmq8Q03NOVpcQAtsSUS3E",
+  apiKey: REACT_APP_FIREBASE_API_KEY,
   authDomain: "innerfriendv2.firebaseapp.com",
   projectId: "innerfriendv2",
   storageBucket: "innerfriendv2.appspot.com",

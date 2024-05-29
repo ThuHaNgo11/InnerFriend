@@ -15,11 +15,15 @@ const index = () => {
   const router = useRouter();
   const { journals } = useContext(JournalContext);
   const { user } = useContext(UserContext)
+  const {setLoadedData} = useContext(JournalContext)
+  const {setLoadedUser} = useContext(UserContext)
 
   const handleDeleteJournal = async (id) => {
     const userId = user?._id
     try {
       await axios.delete(`http://localhost:3000/user/${userId}/journals/${id}`)
+      setLoadedData(false)
+      setLoadedUser(false)
     } catch (error) {
       console.log('Error:', error);
     }

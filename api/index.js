@@ -4,7 +4,6 @@ const busboy = require('connect-busboy');
 const mongoose = require("mongoose");
 const crypto = require("crypto");
 require("dotenv").config();
-const cloudinary = require("cloudinary").v2;
 const util = require('util');
 const app = express();
 const port = 3000;
@@ -12,7 +11,6 @@ const cors = require("cors");
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(busboy());
 app.use(bodyParser.json());
 const jwt = require("jsonwebtoken")
 
@@ -105,7 +103,13 @@ app.get('/user/:id', async (req, res) => {
 // update user profile image
 app.put('/user/:id', async (req, res) => {
     try {
-        const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {new: true}); // option: {new: true} returns the updated user
+        // filter input to get the profilePhotoUrl only
+        // bug, doesn't work, no profilePhotoUrl
+        // How to update only a field?
+        const { profilePhotoUrl } = req.body
+
+        const updatedUser = await User.findByIdAndUpdate(req.params.id, profilePhotoUrl, {new: true}); 
+        // option: {new: true} returns the updated user
         if (!updatedUser) {
             return res.status(404).send({ error: 'User not found' });
         }
