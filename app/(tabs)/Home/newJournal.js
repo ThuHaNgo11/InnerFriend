@@ -14,7 +14,7 @@ import { JournalContext } from '../../../Context/JournalContext';
 import { UserContext } from '../../../Context/UserContext';
 
 const newJournal = () => {
-    const date = new Date().toLocaleDateString('en-us', { weekday: "long", month: "long", day: "numeric" });
+    const date = new Date().toLocaleDateString('en-us', { weekday: "short", month: "short", day: "numeric" });
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [imageUri, setImageUri] = useState(null);

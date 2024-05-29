@@ -15,11 +15,11 @@ const index = () => {
   const router = useRouter();
   const { journals } = useContext(JournalContext);
   const { user } = useContext(UserContext)
-  const {setLoadedData} = useContext(JournalContext)
-  const {setLoadedUser} = useContext(UserContext)
+  const { setLoadedData } = useContext(JournalContext)
+  const { setLoadedUser } = useContext(UserContext)
 
   const handleDeleteJournal = async (id) => {
-    const userId = user?._id
+    const userId = user._id
     try {
       await axios.delete(`http://localhost:3000/user/${userId}/journals/${id}`)
       setLoadedData(false)
@@ -28,6 +28,7 @@ const index = () => {
       console.log('Error:', error);
     }
   }
+
 
   const renderJournal = ({ item }) => (
     <View key={item.keyExtractor} style={styles.journalContainer}>
@@ -46,9 +47,14 @@ const index = () => {
               }
             })
           }}
-        >{item.title} <TouchableOpacity onPress={() => handleDeleteJournal(item._id)}>
+        >{item.title}
+          <TouchableOpacity onPress={() => handleDeleteJournal(item._id)}>
             <Feather name="trash-2" size={18} color="black" />
-          </TouchableOpacity></Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('editJournal')}>
+            <Entypo name="edit" size={18} color="black" />
+          </TouchableOpacity>
+        </Text>
         <Text style={styles.journalDate}>{item.createdAt}</Text>
       </View>
       <View style={styles.journalBodyContainer}>
@@ -67,10 +73,10 @@ const index = () => {
   )
 
   return (
-    <SafeAreaView style={styles.mainContainer}>
+    <SafeAreaView style={{ flex: 1 }}>
       {
         journals?.length ? (
-          <>
+          <View style={styles.mainContainer}>
             <View style={styles.headerContainer}>
               <Text style={styles.headerTitle}>Journal</Text>
               <TouchableOpacity
@@ -84,7 +90,7 @@ const index = () => {
               renderItem={renderJournal}
               keyExtractor={item => item._id}
             />
-          </>
+          </View>
         ) : (
           <FallbackScreen />
         )
@@ -96,9 +102,6 @@ const index = () => {
 export default index;
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1
-  },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -112,12 +115,11 @@ const styles = StyleSheet.create({
   journalContainer: {
     marginBottom: 10,
     gap: 10,
-    padding: 15
+    padding: 10
   },
   journalHeaderContainer: {
-    width: '100%',
     flexDirection: 'row',
-    gap: 5
+    justifyContent: 'space-between'
   },
   journalTitle: {
     fontSize: 20,
@@ -138,7 +140,7 @@ const styles = StyleSheet.create({
     fontSize: 15
   },
   journalImage: {
-    width: 110,
+    width: 120,
     height: 100,
     borderRadius: 7
   }

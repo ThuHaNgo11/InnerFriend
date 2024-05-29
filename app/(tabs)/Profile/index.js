@@ -16,8 +16,8 @@ import axios from 'axios';
 const index = () => {
   const { user, setLoadedUser } = useContext(UserContext)
   const router = useRouter();
-  const [imageUri, setImageUri] = useState(user?.profilePhotoUrl)
-  const [imageUrl, setImageUrl] = useState(user?.profilePhotoUrl)
+  const [imageUri, setImageUri] = useState(null);
+  const [imageUrl, setImageUrl] = useState(user.profilePhotoUrl);
   const [loading, setLoading] = useState(false);
 
   const pickImage = async () => {
@@ -59,6 +59,7 @@ const index = () => {
       const ref = firebase.storage().ref().child(filename);
       await ref.put(blob);
       const downloadUrl = await ref.getDownloadURL();
+      setImageUri(null);
       return downloadUrl;
     } catch (error) {
       console.log("Error: ", error)
@@ -68,18 +69,30 @@ const index = () => {
   const saveProfileImg = async () => {
     setLoading(true)
     const uploadedUrl = await uploadFile();
+    setImageUrl(uploadedUrl);
     try {
       const id = await AsyncStorage.getItem('id');
-      await axios.put(`http://localhost:3000/user/${id}/`, { profilePhotoUrl: uploadedUrl })
-      setLoading(false);
+      await axios.put(`http://localhost:3000/user/${id}`, { profilePhotoUrl: uploadedUrl })
       setLoadedUser(false);
-
-      // use toast is better
-      Alert.alert('Success', 'Save profile photo')
+      setLoading(false);
     } catch (error) {
       console.log("Error", error)
     }
   }
+
+  const deleteProfileImg = async () => {
+    setLoading(true)
+    try {
+      const id = await AsyncStorage.getItem('id');
+      await axios.put(`http://localhost:3000/user/${id}`, { profilePhotoUrl: null })
+      setLoadedUser(false);
+      setLoading(false);
+      setImageUrl(null);
+    } catch (error) {
+      console.log("Error", error)
+    }
+  }
+
 
   const handleLogout = async () => {
     // clear token in local storage
@@ -98,35 +111,68 @@ const index = () => {
       <View>
         {
           imageUrl ? (
-            <>
-              <Image
-                source={{
-                  uri: imageUri || imageUrl
-                }}
-                style={styles.image}
-              />
-              <View style={styles.imageButtonContainer}>
-                <TouchableOpacity
-                  onPress={pickImage}
-                  style={styles.imageButton}
-                >
-                  <Feather
-                    name="camera"
-                    size={24}
-                    color="gray"
-                    style={styles.icon}
-                  />
-                </TouchableOpacity>
-                {
-                  imageUri && <TouchableOpacity
+            !imageUri ? (
+              <>
+                <Image
+                  source={{
+                    uri: imageUrl
+                  }}
+                  style={styles.image}
+                />
+                <View style={styles.imageButtonContainer}>
+                  <TouchableOpacity
+                    onPress={pickImage}
+                    style={styles.imageButton}
+                  >
+                    <Feather
+                      name="camera"
+                      size={24}
+                      color="gray"
+                      style={styles.icon}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={deleteProfileImg}
+                    style={styles.imageButton}
+                  >
+                    <Feather
+                      name="trash-2"
+                      size={24}
+                      color="gray"
+                      style={styles.icon}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </>
+            ) : (
+              <>
+                <Image
+                  source={{
+                    uri: imageUri
+                  }}
+                  style={styles.image}
+                />
+                <View style={styles.imageButtonContainer}>
+                  <TouchableOpacity
+                    onPress={pickImage}
+                    style={styles.imageButton}
+                  >
+                    <Feather
+                      name="camera"
+                      size={24}
+                      color="gray"
+                      style={styles.icon}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
                     onPress={saveProfileImg}
                     style={styles.imageButton}
                   >
                     <AntDesign name="check" size={24} color="gray" />
                   </TouchableOpacity>
-                }
-              </View>
-            </>
+                </View>
+              </>
+            )
           ) : (
             imageUri ? (
               <>

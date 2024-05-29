@@ -1,6 +1,5 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const busboy = require('connect-busboy');
 const mongoose = require("mongoose");
 const crypto = require("crypto");
 require("dotenv").config();
@@ -104,12 +103,10 @@ app.get('/user/:id', async (req, res) => {
 app.put('/user/:id', async (req, res) => {
     try {
         // filter input to get the profilePhotoUrl only
-        // bug, doesn't work, no profilePhotoUrl
-        // How to update only a field?
+        // to avoid modifying other fields
         const { profilePhotoUrl } = req.body
 
-        const updatedUser = await User.findByIdAndUpdate(req.params.id, profilePhotoUrl, {new: true}); 
-        // option: {new: true} returns the updated user
+        const updatedUser = await User.findByIdAndUpdate(req.params.id, {profilePhotoUrl}, {new: true}); 
         if (!updatedUser) {
             return res.status(404).send({ error: 'User not found' });
         }
@@ -209,7 +206,7 @@ app.delete("/user/:userId/journals/:journalId", async (req, res) => {
 // edit journal
 app.put("/journals/:journalId", async (req, res) => {
     try {
-        await Journal.findByIdAndUpdate(req.params.journalId, req.body);
+        await Journal.findByIdAndUpdate(req.params.journalId, req.body, {new: true});
 
         res.status(204).json({ message: "journal updated"});
     } catch (error) {

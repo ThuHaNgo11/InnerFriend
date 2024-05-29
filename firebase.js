@@ -1,4 +1,3 @@
-import { initializeApp } from "firebase/app";
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/storage'
 import {REACT_APP_FIREBASE_API_KEY} from 'react-native-dotenv';

@@ -28,11 +28,11 @@ const login = () => {
             email: email,
             password: password
         }
-        axios.post("http://localhost:3000/login", user).then((res) => {
+        axios.post("http://localhost:3000/login", user).then(async (res) => {
             const token = res.data.token;
             const id = res.data.id;
-            AsyncStorage.setItem("authToken", token);
-            AsyncStorage.setItem('id', id)
+            await AsyncStorage.setItem("authToken", token);
+            await AsyncStorage.setItem('id', id)
             router.replace("/(tabs)/Home")
         }).catch((e) => {
             Alert.alert('Error', 'Invalid email or password');
