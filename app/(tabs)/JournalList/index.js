@@ -43,7 +43,7 @@ const index = () => {
                 title: item.title,
                 content: item.content,
                 createdAt: item.createdAt,
-                image: item.imageUrl
+                imageUrl: item.imageUrl
               }
             })
           }}
@@ -51,7 +51,18 @@ const index = () => {
           <TouchableOpacity onPress={() => handleDeleteJournal(item._id)}>
             <Feather name="trash-2" size={18} color="black" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push('editJournal')}>
+          <TouchableOpacity onPress={() => {
+            router.push({
+              pathname: "/JournalList/editJournal",
+              params: {
+                id: item._id,
+                title: item.title,
+                content: item.content,
+                createdAt: item.createdAt,
+                imageUrl: item.imageUrl
+              }
+            })
+          }}>
             <Entypo name="edit" size={18} color="black" />
           </TouchableOpacity>
         </Text>

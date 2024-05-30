@@ -59,10 +59,6 @@ const styles = StyleSheet.create({
         fontStyle: 'italic',
         color: 'gray',
     },
-    journalBodyContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between'
-    },
     journalContent: {
         fontSize: 15
     },
@@ -70,7 +66,7 @@ const styles = StyleSheet.create({
         width: '100%',
         marginLeft: 'auto',
         marginRight: 'auto',
-        height: 180,
+        height: 220,
         borderRadius: 7
     }
 })

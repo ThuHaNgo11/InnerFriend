@@ -78,7 +78,7 @@ const newJournal = () => {
             return;
         }
         setLoading(true)
-        const uploadedUrl = imageUri ? await uploadFile() : "";
+        const uploadedUrl = imageUri ? await uploadFile() : null;
         try {
             const journalData = {
                 title,

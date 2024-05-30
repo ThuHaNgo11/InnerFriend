@@ -7,6 +7,7 @@ const util = require('util');
 const app = express();
 const port = 3000;
 const cors = require("cors");
+const bcrypt = require('bcrypt');
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -32,16 +33,18 @@ app.post("/register", async (req, res) => {
     try {
         const { name, email, password, createdAt } = req.body;
 
-        ///check if email is already registered
+        // check if email is already registered
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             console.log("Email already registered");
         }
+        const salt = bcrypt.genSaltSync() //more secure
+        const encryptedPassword = await bcrypt.hash(password, salt);
 
         const newUser = new User({
             name,
             email,
-            password,
+            password: encryptedPassword,
             createdAt
         });
 
@@ -56,7 +59,6 @@ app.post("/register", async (req, res) => {
 
 const generateSecretKey = () => {
     const secretKey = crypto.randomBytes(32).toString("hex");
-
     return secretKey;
 };
 
@@ -68,15 +70,20 @@ app.post("/login", async (req, res) => {
         const { email, password } = req.body;
 
         const user = await User.findOne({ email });
+
         if (!user) {
-            return res.status(401).json({ message: "Invalid Email" });
+            return res.status(401).json({ message: "User not found" });
         }
 
-        if (user.password !== password) {
-            return res.status(401).json({ message: "Invalide password" });
-        }
+        const checkPassword = bcrypt.compareSync(password, user.password)
 
-        const token = jwt.sign({ userId: user._id }, secretKey);
+        if (!checkPassword) {
+            return res.status(400).json({ message: 'Invalid email or password' });
+        }    
+
+        const token = jwt.sign({ userId: user._id }, secretKey, {
+            expiresIn: '30d'
+        });
 
         // send id to be kept in asyncStorage
         res.status(200).json({ token: token, id: user._id });
@@ -106,7 +113,7 @@ app.put('/user/:id', async (req, res) => {
         // to avoid modifying other fields
         const { profilePhotoUrl } = req.body
 
-        const updatedUser = await User.findByIdAndUpdate(req.params.id, {profilePhotoUrl}, {new: true}); 
+        const updatedUser = await User.findByIdAndUpdate(req.params.id, { profilePhotoUrl }, { new: true });
         if (!updatedUser) {
             return res.status(404).send({ error: 'User not found' });
         }
@@ -206,9 +213,9 @@ app.delete("/user/:userId/journals/:journalId", async (req, res) => {
 // edit journal
 app.put("/journals/:journalId", async (req, res) => {
     try {
-        await Journal.findByIdAndUpdate(req.params.journalId, req.body, {new: true});
+        await Journal.findByIdAndUpdate(req.params.journalId, req.body, { new: true });
 
-        res.status(204).json({ message: "journal updated"});
+        res.status(204).json({ message: "journal updated" });
     } catch (error) {
         console.log(error)
         res.status(500).json({ error: "Can't delete journal" })

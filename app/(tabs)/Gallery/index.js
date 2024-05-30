@@ -10,7 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const index = () => {
     const router = useRouter();
     const { journals } = useContext(JournalContext);
-    const journalsWithImg = journals.filter((journal) => journal.imageUrl !== "" )
+    const journalsWithImg = journals.filter((journal) => journal.imageUrl)
 
     const renderImg = ({ item }) => (
         <TouchableOpacity
