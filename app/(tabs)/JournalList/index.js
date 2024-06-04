@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, FlatList, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, FlatList, TouchableOpacity, Share } from "react-native";
 import { Image } from "expo-image";
 import React, { useContext } from "react";
 import colors from '../../../constants/colors';
@@ -6,10 +6,9 @@ import { useRouter } from "expo-router";
 import FallbackScreen from "../../../components/FallbackScreen";
 import { JournalContext } from "../../../Context/JournalContext";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Feather, Entypo } from '@expo/vector-icons';
+import { Feather, Entypo, FontAwesome } from '@expo/vector-icons';
 import axios from "axios";
 import { UserContext } from "../../../Context/UserContext";
-
 
 const index = () => {
   const router = useRouter();
@@ -28,6 +27,17 @@ const index = () => {
       console.log('Error:', error);
     }
   }
+
+  // handle share journal
+  const shareText = async (text) => {
+    try {
+      await Share.share({
+        message: text
+      });
+    } catch (error) {
+      console.error('Error sharing:', error);
+    }
+  };
 
 
   const renderJournal = ({ item }) => (
@@ -49,7 +59,10 @@ const index = () => {
           }}
         >{item.title}
           <TouchableOpacity onPress={() => handleDeleteJournal(item._id)}>
-            <Feather name="trash-2" size={18} color="black" />
+            <Feather style={{marginLeft: 10}} name="trash-2" size={18} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress= {() => shareText(item.content)}>
+            <FontAwesome style={{marginLeft: 10}} name="paper-plane-o" size={18} color="black" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => {
             router.push({
@@ -63,7 +76,7 @@ const index = () => {
               }
             })
           }}>
-            <Entypo name="edit" size={18} color="black" />
+            <Entypo style={{marginLeft: 10}} name="edit" size={18} color="black" />
           </TouchableOpacity>
         </Text>
         <Text style={styles.journalDate}>{item.createdAt}</Text>

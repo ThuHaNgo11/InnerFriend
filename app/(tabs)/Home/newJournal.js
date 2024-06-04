@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, TextInput, Alert, Image, TouchableOpacity } from 'react-native'
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import CustomedButton from '../../../components/CustomedButton';
-import { Ionicons, FontAwesome5, Feather } from '@expo/vector-icons';
+import { Ionicons, FontAwesome5, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -12,6 +12,8 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { JournalContext } from '../../../Context/JournalContext';
 import { UserContext } from '../../../Context/UserContext';
+import Voice from '@react-native-voice/voice'
+import colors from '../../../constants/colors';
 
 const newJournal = () => {
     const date = new Date().toLocaleDateString('en-us', { weekday: "short", month: "short", day: "numeric" });
@@ -20,8 +22,47 @@ const newJournal = () => {
     const [imageUri, setImageUri] = useState(null);
     const [loading, setLoading] = useState(false);
     const router = useRouter();
-    const {setLoadedData} = useContext(JournalContext)
-    const {setLoadedUser} = useContext(UserContext)
+    const { setLoadedData } = useContext(JournalContext)
+    const { setLoadedUser } = useContext(UserContext)
+    const [speakingStarted, setSpeakingStarted] = useState(false);
+    const [titleFromSpeech, setTitleFromSpeech] = useState([]);
+
+    useEffect(() => {
+        Voice.onSpeechError = (e) => {
+            console.log(e)
+        };
+
+        Voice.onSpeechResults = (res) => {
+            // let text = res.value[0];
+            setTitleFromSpeech(res.value);
+        }
+
+        // clean up
+        return () => {
+            Voice.destroy().then(Voice.removeAllListeners);
+        }
+    }, [])
+
+    // start speaking 
+    const startSpeak = async () => {
+        try {
+            await Voice.start("en-US");
+            setSpeakingStarted(true);
+        } catch (error) {
+            console.log("Voice start error: ", error)
+        }
+    }
+
+    const stopSpeak = async () => {
+        try {
+            await Voice.stop();
+            setSpeakingStarted(false);
+            setTitle(titleFromSpeech[0]) 
+            setTitleFromSpeech([])
+        } catch (error) {
+            console.log("Voice stop error: ", error)
+        }
+    }
 
     const pickImage = async () => {
         // No permissions request is necessary for launching the image library
@@ -39,7 +80,7 @@ const newJournal = () => {
 
     const uploadFile = async () => {
         try {
-            const { uri } =  await FileSystem.getInfoAsync(imageUri);
+            const { uri } = await FileSystem.getInfoAsync(imageUri);
 
             if (!uri) {
                 throw new Error("Invalid file Uri");
@@ -69,11 +110,11 @@ const newJournal = () => {
     }
 
     const saveEntry = async () => {
-        if(title == ""){
+        if (title == "") {
             Alert.alert('error', 'title is empty')
             return;
         }
-        if(content == ""){
+        if (content == "") {
             Alert.alert('error', 'content is empty')
             return;
         }
@@ -118,13 +159,32 @@ const newJournal = () => {
                 />
                 <Text style={styles.journalDate}>{date}</Text>
             </View>
-            <TextInput
-                style={styles.titleInput}
-                placeholder="Title"
-                value={title}
-                onChangeText={setTitle}
-                multiline
-            />
+            <View>
+                <TextInput
+                    style={styles.titleInput}
+                    placeholder="Title"
+                    value={title}
+                    onChangeText={setTitle}
+                    multiline
+                />
+                {speakingStarted ? (
+                    <View style={styles.textFromSpeechPreview}>
+                        {titleFromSpeech.map((result, index) => <Text key={index}>{result}</Text>)}
+                        <TouchableOpacity
+                            onPress={stopSpeak}
+                        >
+                            <Feather name="check" size={24} color="black" />
+                        </TouchableOpacity>
+                    </View>
+                ) : (
+                    <TouchableOpacity
+                        onPress={startSpeak}
+                    >
+                        <Feather name="mic" size={24} color="black" />
+                    </TouchableOpacity>
+                )}
+            </View>
+
             <TextInput
                 style={styles.contentInput}
                 placeholder="Content"
@@ -175,6 +235,12 @@ const styles = StyleSheet.create({
         height: 40,
         marginBottom: 10,
         borderColor: 'transparent'
+    },
+    textFromSpeechPreview: {
+        width: '100%',
+        borderColor: colors.accent,
+        borderWidth: 2,
+        borderRadius: 7
     },
     contentInput: {
         fontSize: 12,

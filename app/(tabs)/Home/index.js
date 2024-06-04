@@ -24,7 +24,10 @@ const index = () => {
                 >
                     <Text style={styles.buttonText}>Writing</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity
+                    onPress={() => { router.replace('/JournalList') }}
+                    style={styles.button}
+                >
                     <Text style={styles.buttonText}>Reflecting</Text>
                 </TouchableOpacity>
             </View>

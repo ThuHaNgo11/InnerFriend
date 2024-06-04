@@ -1,0 +1,25 @@
+{
+  "cli": {
+    "version": ">= 9.1.0"
+  },
+  "build": {
+    "development:simulator": {
+      "ios": {
+        "simulator": true
+      },
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {}
+  },
+  "submit": {
+    "production": {}
+  }
+}

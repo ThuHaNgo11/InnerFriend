@@ -1,16 +1,30 @@
 
-import { StyleSheet, Text, View, ScrollView } from 'react-native'
-import React from 'react'
-import { AntDesign } from '@expo/vector-icons';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native'
+import React, { useState } from 'react'
+import { AntDesign, Octicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useLocalSearchParams } from 'expo-router';
 import colors from '../../../constants/colors';
 import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Speech from 'expo-speech'
 
 const IndividualJournal = () => {
     const router = useRouter();
     const params = useLocalSearchParams();
+    const [isSpeaking, setIsSpeaking] = useState(false);
+
+    const textToSpeech = () => {
+        setIsSpeaking(true);
+        Speech.speak(params.content, {
+            // onDone: setIsSpeaking(false)
+        });
+    }
+
+    const stopSpeech = () => {
+        Speech.pause();
+        setIsSpeaking(false);
+    }
     return (
         <SafeAreaView style={styles.mainContainer}>
             <ScrollView>
@@ -19,10 +33,21 @@ const IndividualJournal = () => {
                     <Text style={styles.journalDate}>{params.createdAt}</Text>
                 </View>
                 <View style={styles.bodyContainer}>
-                    <Text style={styles.journalTitle}>{params.title}</Text>
-                    <Text
-                        style={styles.journalContent}
-                    >{params.content}</Text>
+                    {/* title */}
+                    <View style={styles.journalHeaderContainer}>
+                        <Text style={styles.journalTitle}>{params.title}</Text>
+                        {isSpeaking ? <TouchableOpacity onPress={stopSpeech}>
+                            <Octicons name="mute" size={20} color="black" />
+                        </TouchableOpacity> : <TouchableOpacity
+                            onPress={textToSpeech}
+                        >
+                            <Octicons name="unmute" size={20} color="black" />
+                        </TouchableOpacity>}
+
+                    </View>
+                    {/* content */}
+                    <Text style={styles.journalContent}>
+                        {params.content}</Text>
                     <Image
                         source={params.imageUrl}
                         style={styles.journalImage}
@@ -46,6 +71,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         marginTop: 10
     },
+    journalHeaderContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
     bodyContainer: {
         marginBottom: 10,
         gap: 10,
@@ -53,7 +83,6 @@ const styles = StyleSheet.create({
     },
     journalTitle: {
         fontSize: 20,
-        width: '100%',
         color: colors.accent
     },
     journalDate: {
