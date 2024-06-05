@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, TextInput, Alert, Image, TouchableOpacity } from 'react-native'
 import React, { useState, useContext, useEffect } from 'react'
 import CustomedButton from '../../../components/CustomedButton';
-import { Ionicons, FontAwesome5, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome5, Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -13,7 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { JournalContext } from '../../../Context/JournalContext';
 import { UserContext } from '../../../Context/UserContext';
 import Voice from '@react-native-voice/voice'
-import colors from '../../../constants/colors';
+import LottieView from 'lottie-react-native';
 
 const newJournal = () => {
     const date = new Date().toLocaleDateString('en-us', { weekday: "short", month: "short", day: "numeric" });
@@ -25,7 +25,7 @@ const newJournal = () => {
     const { setLoadedData } = useContext(JournalContext)
     const { setLoadedUser } = useContext(UserContext)
     const [speakingStarted, setSpeakingStarted] = useState(false);
-    const [titleFromSpeech, setTitleFromSpeech] = useState([]);
+    const [speakingContentStarted, setSpeakingContentStarted] = useState(false);
 
     useEffect(() => {
         Voice.onSpeechError = (e) => {
@@ -34,7 +34,7 @@ const newJournal = () => {
 
         Voice.onSpeechResults = (res) => {
             // let text = res.value[0];
-            setTitleFromSpeech(res.value);
+            setTitle(res.value[0]);
         }
 
         // clean up
@@ -57,8 +57,6 @@ const newJournal = () => {
         try {
             await Voice.stop();
             setSpeakingStarted(false);
-            setTitle(titleFromSpeech[0]) 
-            setTitleFromSpeech([])
         } catch (error) {
             console.log("Voice stop error: ", error)
         }
@@ -159,7 +157,7 @@ const newJournal = () => {
                 />
                 <Text style={styles.journalDate}>{date}</Text>
             </View>
-            <View>
+            <View style={styles.headerContainer}>
                 <TextInput
                     style={styles.titleInput}
                     placeholder="Title"
@@ -168,12 +166,17 @@ const newJournal = () => {
                     multiline
                 />
                 {speakingStarted ? (
-                    <View style={styles.textFromSpeechPreview}>
-                        {titleFromSpeech.map((result, index) => <Text key={index}>{result}</Text>)}
+                    <View>
+                        <LottieView 
+                            source={require('../../../assets/sound-waves.json')}
+                            autoPlay
+                            loop
+                            style={{width: 24, height: 20}}
+                        />
                         <TouchableOpacity
                             onPress={stopSpeak}
                         >
-                            <Feather name="check" size={24} color="black" />
+                            <Feather name="mic-off" size={24} color="black" />
                         </TouchableOpacity>
                     </View>
                 ) : (
@@ -233,14 +236,7 @@ const styles = StyleSheet.create({
     titleInput: {
         fontSize: 20,
         height: 40,
-        marginBottom: 10,
         borderColor: 'transparent'
-    },
-    textFromSpeechPreview: {
-        width: '100%',
-        borderColor: colors.accent,
-        borderWidth: 2,
-        borderRadius: 7
     },
     contentInput: {
         fontSize: 12,
