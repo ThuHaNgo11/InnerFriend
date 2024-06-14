@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View, TextInput, Alert, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, TextInput, Alert, Image, TouchableOpacity, Pressable } from 'react-native'
 import React, { useState, useContext, useEffect } from 'react'
 import CustomedButton from '../../../components/CustomedButton';
-import { Ionicons, FontAwesome5, Feather } from '@expo/vector-icons';
+import { Ionicons, FontAwesome5, Feather, FontAwesome6 } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -14,6 +14,8 @@ import { JournalContext } from '../../../Context/JournalContext';
 import { UserContext } from '../../../Context/UserContext';
 import Voice from '@react-native-voice/voice'
 import LottieView from 'lottie-react-native';
+import OpenAI from "openai";
+import { REACT_APP_OPENAI_API_KEY } from 'react-native-dotenv';
 
 const newJournal = () => {
     const date = new Date().toLocaleDateString('en-us', { weekday: "short", month: "short", day: "numeric" });
@@ -21,42 +23,77 @@ const newJournal = () => {
     const [content, setContent] = useState("");
     const [imageUri, setImageUri] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [loadingOpenaiImage, setLoadingOpenaiImage] = useState(false);
     const router = useRouter();
     const { setLoadedData } = useContext(JournalContext)
     const { setLoadedUser } = useContext(UserContext)
-    const [speakingStarted, setSpeakingStarted] = useState(false);
     const [speakingContentStarted, setSpeakingContentStarted] = useState(false);
+    const [buttonHover, setButtonHover] = useState(false);
+    const [openaiImageUrl, setOpenaiImageUrl] = useState(null)
 
-    useEffect(() => {
+    // Call the API to generate n images from a prompt
+    const generateImage = async () => {
+        setLoadingOpenaiImage(true);
+        const openai = new OpenAI({ apiKey: REACT_APP_OPENAI_API_KEY });
+
+        try {
+            const res = await openai.images.generate({
+                prompt: `${content}. Animation style`,
+                n: 1,
+                size: "256x256",
+            });
+            setLoadingOpenaiImage(false);
+            setOpenaiImageUrl(res.data[0].url);
+            console.log("open ai image url: ", res.data[0].url)
+        } catch (error) {
+            // possible bug: user press the generatign button before insert content
+            setLoadingOpenaiImage(false);
+            console.error(`Error generating image: ${error}`);
+        }
+    };
+
+    setupEventListener = () => {
         Voice.onSpeechError = (e) => {
             console.log(e)
         };
 
         Voice.onSpeechResults = (res) => {
-            // let text = res.value[0];
-            setTitle(res.value[0]);
-        }
+            if (content == "") {
+                setContent(res.value[0]);
+            } else {
+                let newContent = `${content.trimEnd()} ${res.value[0]}`;
+                setContent(newContent);
+            }
+        };
+    }
 
+    closeEventListener = () => {
+        Voice.destroy().then(Voice.removeAllListeners);
+    }
+
+    useEffect(() => {
         // clean up
         return () => {
             Voice.destroy().then(Voice.removeAllListeners);
         }
     }, [])
 
-    // start speaking 
-    const startSpeak = async () => {
+    // start speaking content
+    const startSpeakContent = async () => {
         try {
+            setupEventListener();
             await Voice.start("en-US");
-            setSpeakingStarted(true);
+            setSpeakingContentStarted(true);
         } catch (error) {
             console.log("Voice start error: ", error)
         }
     }
 
-    const stopSpeak = async () => {
+    const stopSpeakContent = async () => {
         try {
             await Voice.stop();
-            setSpeakingStarted(false);
+            closeEventListener();
+            setSpeakingContentStarted(false);
         } catch (error) {
             console.log("Voice stop error: ", error)
         }
@@ -117,7 +154,14 @@ const newJournal = () => {
             return;
         }
         setLoading(true)
-        const uploadedUrl = imageUri ? await uploadFile() : null;
+        let uploadedUrl = null;
+        if (imageUri) {
+            uploadedUrl = await uploadFile();
+        }
+        if (openaiImageUrl) {
+            uploadedUrl = openaiImageUrl;
+        }
+
         try {
             const journalData = {
                 title,
@@ -139,6 +183,9 @@ const newJournal = () => {
                     setTitle("");
                     setContent("");
                     setImageUri(null);
+                    setOpenaiImageUrl(null);
+                    // stop the voice event listener
+                    stopSpeakContent();
                 }
             }])
         } catch (error) {
@@ -148,7 +195,7 @@ const newJournal = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.headerContainer}>
+            <View style={styles.rowContainer}>
                 <Ionicons
                     name="arrow-back"
                     size={24}
@@ -157,56 +204,86 @@ const newJournal = () => {
                 />
                 <Text style={styles.journalDate}>{date}</Text>
             </View>
-            <View style={styles.headerContainer}>
+            <TextInput
+                style={styles.titleInput}
+                placeholder="Title"
+                value={title}
+                onChangeText={setTitle}
+                multiline
+            />
+
+            <View style={styles.rowContainer}>
                 <TextInput
-                    style={styles.titleInput}
-                    placeholder="Title"
-                    value={title}
-                    onChangeText={setTitle}
+                    style={styles.contentInput}
+                    placeholder="Content"
+                    value={content}
+                    onChangeText={setContent}
+                    autoCorrect={false}
                     multiline
                 />
-                {speakingStarted ? (
+                {speakingContentStarted ? (
                     <View>
-                        <LottieView 
+                        <LottieView
                             source={require('../../../assets/sound-waves.json')}
                             autoPlay
                             loop
-                            style={{width: 24, height: 20}}
+                            style={{ width: 24, height: 20 }}
                         />
                         <TouchableOpacity
-                            onPress={stopSpeak}
+                            onPress={stopSpeakContent}
                         >
                             <Feather name="mic-off" size={24} color="black" />
                         </TouchableOpacity>
                     </View>
                 ) : (
                     <TouchableOpacity
-                        onPress={startSpeak}
+                        onPress={startSpeakContent}
                     >
                         <Feather name="mic" size={24} color="black" />
                     </TouchableOpacity>
                 )}
             </View>
 
-            <TextInput
-                style={styles.contentInput}
-                placeholder="Content"
-                value={content}
-                onChangeText={setContent}
-                autoCorrect={false}
-                multiline
-            />
             {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
+
+            {loadingOpenaiImage && <LottieView
+                source={require("../../../assets/loading-openai-image.json")}
+                style={styles.image}
+                autoPlay
+                loop
+            />}
+
+            {openaiImageUrl && <Image source={{ uri: openaiImageUrl }} style={styles.image} />}
+
             <View style={styles.buttonContainer}>
-                {imageUri ? (
-                    <TouchableOpacity onPress={() => setImageUri(null)}>
-                        <Feather name="trash-2" size={24} color="black" />
-                    </TouchableOpacity>
-                ) : (<TouchableOpacity onPress={pickImage}>
-                    <FontAwesome5 name="image" size={24} color="black" />
-                </TouchableOpacity>)}
+                {imageUri || openaiImageUrl ? (
+                    imageUri ? (
+                        <TouchableOpacity onPress={() => setImageUri(null)}>
+                            <Feather name="trash-2" size={24} color="black" />
+                        </TouchableOpacity>
+                    ) : (
+                        <TouchableOpacity onPress={() => setOpenaiImageUrl(null)}>
+                            <Feather name="trash-2" size={24} color="black" />
+                        </TouchableOpacity>
+                    )
+                ) : (
+                    <View style={[styles.buttonContainer, { gap: 10 }]}>
+                        <TouchableOpacity onPress={pickImage}>
+                            <FontAwesome5 name="image" size={28} color="black" />
+                        </TouchableOpacity>
+                        <Pressable
+                            onPress={generateImage}
+                            // use onHoverIn/Out on real device, the following is work-around for simulator
+                            onLongPress={() => setButtonHover(true)}
+                            onPressOut={() => setButtonHover(false)}
+                        >
+                            <FontAwesome6 name="wand-magic-sparkles" size={24} color="black" />
+                        </Pressable>
+                    </View>
+                )}
                 <CustomedButton title="Save" handler={saveEntry} />
             </View>
+            {buttonHover ? (<Text style={{ color: 'gray' }}>Insert an AI-suggested image</Text>) : (null)}
             <Spinner
                 visible={loading}
                 textContent={'Saving...'}
@@ -224,7 +301,7 @@ const styles = StyleSheet.create({
         padding: 10,
         gap: 20
     },
-    headerContainer: {
+    rowContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between'
@@ -235,18 +312,19 @@ const styles = StyleSheet.create({
     },
     titleInput: {
         fontSize: 20,
-        height: 40,
+        maxHeight: 60,
         borderColor: 'transparent'
     },
     contentInput: {
         fontSize: 12,
-        maxHeight: '40%',
+        maxHeight: 400,
         marginBottom: 10,
-        borderColor: 'transparent'
+        borderColor: 'transparent',
+        maxWidth: '90%'
     },
     image: {
         width: '100%',
-        height: 220,
+        height: 256,
         borderRadius: 10
     },
     buttonContainer: {

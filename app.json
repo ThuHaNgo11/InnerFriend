@@ -7,7 +7,7 @@
     "icon": "./assets/icon.jpeg",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/journaling.avif",
+      "image": "./assets/fallback.jpeg",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -18,7 +18,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.thuhango.InnerFriendClientV2"
     },
-    "scheme": "InnerFriendClient",
+    "scheme": ["innerfriend"],
     "web": {
       "favicon": "./assets/favicon.png"
     },

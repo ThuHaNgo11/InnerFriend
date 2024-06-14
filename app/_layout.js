@@ -30,9 +30,9 @@ export default function Layout() {
 
     return (
         <SafeAreaProvider>
-            <Stack>
-                <Stack.Screen name="(authenticate)" options={{ headerShown: false }} />
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack screenOptions={{headerShown: false }}>
+                <Stack.Screen name="(authenticate)" />
+                <Stack.Screen name="(tabs)"/>
             </Stack>
         </SafeAreaProvider>
     )

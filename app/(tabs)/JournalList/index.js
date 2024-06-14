@@ -1,14 +1,15 @@
-import { StyleSheet, View, Text, FlatList, TouchableOpacity, Share } from "react-native";
+import { StyleSheet, View, Text, FlatList, TouchableOpacity, Share} from "react-native";
 import { Image } from "expo-image";
 import React, { useContext } from "react";
 import colors from '../../../constants/colors';
 import { useRouter } from "expo-router";
-import FallbackScreen from "../../../components/FallbackScreen";
+
 import { JournalContext } from "../../../Context/JournalContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather, Entypo, FontAwesome } from '@expo/vector-icons';
 import axios from "axios";
 import { UserContext } from "../../../Context/UserContext";
+import JournalListFallback from "../../../components/JournalListFallback";
 
 const index = () => {
   const router = useRouter();
@@ -38,7 +39,6 @@ const index = () => {
       console.error('Error sharing:', error);
     }
   };
-
 
   const renderJournal = ({ item }) => (
     <View key={item.keyExtractor} style={styles.journalContainer}>
@@ -116,7 +116,7 @@ const index = () => {
             />
           </View>
         ) : (
-          <FallbackScreen />
+          <JournalListFallback/>
         )
       }
     </SafeAreaView>

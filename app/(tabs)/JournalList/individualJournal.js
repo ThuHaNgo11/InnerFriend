@@ -1,6 +1,6 @@
 
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { AntDesign, Octicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useLocalSearchParams } from 'expo-router';
@@ -14,22 +14,38 @@ const IndividualJournal = () => {
     const params = useLocalSearchParams();
     const [isSpeaking, setIsSpeaking] = useState(false);
 
-    const textToSpeech = () => {
-        setIsSpeaking(true);
-        Speech.speak(params.content, {
-            // onDone: setIsSpeaking(false)
-        });
+    const textToSpeech = async () => {
+        const speaking = await Speech.isSpeakingAsync();
+        console.log("start speaking")
+        if (!speaking) {
+            setIsSpeaking(true);
+            Speech.speak(params.content, {
+                onDone: () => {
+                    setIsSpeaking(false);
+                    console.log("done")
+                },
+                onError: () => setIsSpeaking(false),
+            });
+        }
     }
 
-    const stopSpeech = () => {
-        Speech.pause();
-        setIsSpeaking(false);
+    const stopSpeech = async () => {
+        console.log("stop speaking")
+        const speaking = await Speech.isSpeakingAsync();
+        if (speaking) {
+            Speech.stop();
+            setIsSpeaking(false);
+        }
     }
+
     return (
         <SafeAreaView style={styles.mainContainer}>
             <ScrollView>
                 <View style={styles.headerContainer}>
-                    <AntDesign onPress={() => { router.back() }} name="arrowleft" size={24} color="black" />
+                    <AntDesign onPress={() => { 
+                        router.back(); 
+                        stopSpeech;
+                        }} name="arrowleft" size={24} color="black" />
                     <Text style={styles.journalDate}>{params.createdAt}</Text>
                 </View>
                 <View style={styles.bodyContainer}>

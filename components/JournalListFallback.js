@@ -3,7 +3,7 @@ import React from 'react'
 import CustomedButton from './CustomedButton'
 import { useRouter } from 'expo-router'
 
-const FallbackScreen = () => {
+const JournalListFallback = () => {
     const router = useRouter();
     return (
         <View style={styles.container}>
@@ -17,7 +17,7 @@ const FallbackScreen = () => {
     )
 }
 
-export default FallbackScreen
+export default JournalListFallback
 
 const styles = StyleSheet.create({
     container: {

@@ -179,7 +179,6 @@ const styles = StyleSheet.create({
     },
     titleInput: {
         fontSize: 20,
-        height: 40,
         marginBottom: 10,
         borderColor: 'transparent'
     },

@@ -8,7 +8,7 @@ const GalleryFallback = () => {
     return (
         <View style={styles.container}>
             <Image
-                source={require('../assets/upload-img-prompt.avif')}
+                source={require('../assets/fallbackscreen.png')}
                 style={styles.image}
             />
             <Text style={styles.text}>No Image to show</Text>
