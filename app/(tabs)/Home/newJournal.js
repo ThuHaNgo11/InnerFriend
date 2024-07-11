@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, TextInput, Alert, Image, TouchableOpacity, Pressable } from 'react-native'
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useEffect, useMemo } from 'react'
 import CustomedButton from '../../../components/CustomedButton';
-import { Ionicons, FontAwesome5, Feather, FontAwesome6 } from '@expo/vector-icons';
+import { Ionicons, FontAwesome5, Feather, FontAwesome6, Entypo } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -16,6 +16,14 @@ import Voice from '@react-native-voice/voice'
 import LottieView from 'lottie-react-native';
 import OpenAI from "openai";
 import { REACT_APP_OPENAI_API_KEY } from 'react-native-dotenv';
+import colors from '../../../constants/colors';
+import {
+    BottomModal,
+    ModalContent,
+    ModalTitle,
+    SlideAnimation,
+} from "react-native-modals";
+
 
 const newJournal = () => {
     const date = new Date().toLocaleDateString('en-us', { weekday: "short", month: "short", day: "numeric" });
@@ -29,22 +37,28 @@ const newJournal = () => {
     const { setLoadedUser } = useContext(UserContext)
     const [speakingContentStarted, setSpeakingContentStarted] = useState(false);
     const [buttonHover, setButtonHover] = useState(false);
-    const [openaiImageUrl, setOpenaiImageUrl] = useState(null)
+    const [openaiImageUrl, setOpenaiImageUrl] = useState(null);
+    const [openaiImageStyle, setOpenaiImageStyle] = useState("");
+    const [openaiImagePrompt, setOpenaiImagePrompt] = useState("");
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const suggestions = ["Animation", "Real life", "Painting", "Sci-fi"];
 
     // Call the API to generate n images from a prompt
     const generateImage = async () => {
+        setIsModalVisible(false);
         setLoadingOpenaiImage(true);
         const openai = new OpenAI({ apiKey: REACT_APP_OPENAI_API_KEY });
+        console.log(openaiImageStyle)
 
         try {
             const res = await openai.images.generate({
-                prompt: `${content}. Animation style`,
+                prompt: `${openaiImagePrompt} with ${openaiImageStyle} style.`,
                 n: 1,
                 size: "256x256",
             });
-            setLoadingOpenaiImage(false);
             setOpenaiImageUrl(res.data[0].url);
-            console.log("open ai image url: ", res.data[0].url)
+            setOpenaiImageStyle("");
+            setOpenaiImagePrompt("");
         } catch (error) {
             // possible bug: user press the generatign button before insert content
             setLoadingOpenaiImage(false);
@@ -161,7 +175,6 @@ const newJournal = () => {
         if (openaiImageUrl) {
             uploadedUrl = openaiImageUrl;
         }
-
         try {
             const journalData = {
                 title,
@@ -184,6 +197,7 @@ const newJournal = () => {
                     setContent("");
                     setImageUri(null);
                     setOpenaiImageUrl(null);
+
                     // stop the voice event listener
                     stopSpeakContent();
                 }
@@ -253,16 +267,25 @@ const newJournal = () => {
                 loop
             />}
 
-            {openaiImageUrl && <Image source={{ uri: openaiImageUrl }} style={styles.image} />}
+            <Image
+                source={{ uri: openaiImageUrl }}
+                style={(openaiImageUrl && !loadingOpenaiImage) ? styles.image : {width: 1, height: 1}}
+                onLoad={() => {
+                    console.log("loaded")
+                    setLoadingOpenaiImage(false);
+                }}
+            />
 
             <View style={styles.buttonContainer}>
-                {imageUri || openaiImageUrl ? (
+                {imageUri || (openaiImageUrl && !loadingOpenaiImage)? (
                     imageUri ? (
                         <TouchableOpacity onPress={() => setImageUri(null)}>
                             <Feather name="trash-2" size={24} color="black" />
                         </TouchableOpacity>
                     ) : (
-                        <TouchableOpacity onPress={() => setOpenaiImageUrl(null)}>
+                        <TouchableOpacity onPress={() => {
+                            setOpenaiImageUrl(null)
+                        }}>
                             <Feather name="trash-2" size={24} color="black" />
                         </TouchableOpacity>
                     )
@@ -272,7 +295,7 @@ const newJournal = () => {
                             <FontAwesome5 name="image" size={28} color="black" />
                         </TouchableOpacity>
                         <Pressable
-                            onPress={generateImage}
+                            onPress={() => { setIsModalVisible(!isModalVisible) }}
                             // use onHoverIn/Out on real device, the following is work-around for simulator
                             onLongPress={() => setButtonHover(true)}
                             onPressOut={() => setButtonHover(false)}
@@ -289,6 +312,58 @@ const newJournal = () => {
                 textContent={'Saving...'}
                 textStyle={styles.spinnerTextStyle}
             />
+            <BottomModal
+                onBackdropPress={() => {
+                    setIsModalVisible(!isModalVisible);
+                }}
+                onHardwareBackPress={() => {
+                    setIsModalVisible(!isModalVisible);
+                }}
+                swipeDirection={["up", "down"]}
+                swipeThreshold={200}
+                modalTitle={<ModalTitle title="Image generation" />}
+                modalAnimation={
+                    new SlideAnimation({
+                        slideFrom: "bottom",
+                    })
+                }
+                visible={isModalVisible}
+                onTouchOutside={() => setIsModalVisible(!isModalVisible)}
+            >
+                <ModalContent style={styles.modalContent}>
+                    <View style={styles.modalContentContainer}>
+                        <TextInput
+                            value={openaiImagePrompt}
+                            onChangeText={(text) => setOpenaiImagePrompt(text)}
+                            placeholder="Prompt to generate image"
+                            style={styles.textInput}
+                        />
+                        <Pressable
+                            onPress={generateImage}
+                        >
+                            <Entypo name="check" size={24} color="black" />
+                        </Pressable>
+                    </View>
+
+                    <Text style={{ marginTop: 15 }}>Style Suggestions</Text>
+                    <View style={styles.suggestionButtonContainer}>
+                        {suggestions?.map((item, index) => {
+                            return <TouchableOpacity
+                                style={
+                                    item == openaiImageStyle? styles.selectedStyleButton : styles.suggestionButton}
+                                key={index}
+                                onPress={
+                                    () => {
+                                        setOpenaiImageStyle(item);
+                                    }
+                                }
+                            >
+                                <Text>{item}</Text>
+                            </TouchableOpacity>
+                        })}
+                    </View>
+                </ModalContent>
+            </BottomModal>
         </SafeAreaView>
     )
 }
@@ -304,7 +379,7 @@ const styles = StyleSheet.create({
     rowContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     journalDate: {
         fontStyle: 'italic',
@@ -317,14 +392,14 @@ const styles = StyleSheet.create({
     },
     contentInput: {
         fontSize: 12,
-        maxHeight: 400,
+        maxHeight: 200,
         marginBottom: 10,
         borderColor: 'transparent',
         maxWidth: '90%'
     },
     image: {
         width: '100%',
-        height: 256,
+        height: 300,
         borderRadius: 10
     },
     buttonContainer: {
@@ -335,6 +410,68 @@ const styles = StyleSheet.create({
     spinnerTextStyle: {
         color: '#FFF'
     },
+    modal: {
+        gap: 20,
+        width: '60%',
+        marginLeft: 80,
+        borderRadius: 10,
+        paddingVertical: 20,
+        backgroundColor: colors.secondary
+    },
+    radioButtonTitle: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    modalContent: {
+        width: "100%",
+        height: 290
+    },
+    textInput: {
+        padding: 10,
+        borderColor: "#E0E0E0",
+        borderWidth: 1,
+        borderRadius: 5,
+        flex: 1
+    },
+    modalContentContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 10,
+        gap: 10
+    },
+    modalButton: {
+        borderColor: "#E0E0E0",
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderWidth: 1,
+        borderRadius: 25
+    },
+    modalButtonContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+        marginVertical: 10
+    },
+    suggestionButton: {
+        backgroundColor: "#F0F8FF",
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 25,
+    },
+    suggestionButtonContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 10,
+        alignItems: 'center',
+        marginVertical: 10
+    },
+    selectedStyleButton: {
+        backgroundColor: colors.secondary,
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 25,
+    }
 })
 
 // test data:

@@ -1,11 +1,13 @@
 const express = require("express");
+const app = express();
+const port = 3000;
+
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const crypto = require("crypto");
 require("dotenv").config();
 const util = require('util');
-const app = express();
-const port = 3000;
+
 const cors = require("cors");
 const bcrypt = require('bcrypt');
 

@@ -1,11 +1,11 @@
 
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState} from 'react'
+import { Image } from 'expo-image';
 import { AntDesign, Octicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useLocalSearchParams } from 'expo-router';
 import colors from '../../../constants/colors';
-import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Speech from 'expo-speech'
 
@@ -65,7 +65,7 @@ const IndividualJournal = () => {
                     <Text style={styles.journalContent}>
                         {params.content}</Text>
                     <Image
-                        source={params.imageUrl}
+                        source={{uri: params.imageUrl}}
                         style={styles.journalImage}
                     />
                 </View>

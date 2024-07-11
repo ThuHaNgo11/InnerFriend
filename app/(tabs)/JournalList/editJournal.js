@@ -1,8 +1,9 @@
 
 import { useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { StyleSheet, Text, View, TextInput, Alert, Image, TouchableOpacity, ScrollView } from 'react-native'
-import React, { useState, useContext, useEffect } from 'react'
+import { StyleSheet, Text, View, TextInput, Alert,TouchableOpacity, ScrollView } from 'react-native'
+import { Image } from 'expo-image';
+import React, { useState, useContext } from 'react'
 import CustomedButton from '../../../components/CustomedButton';
 import { FontAwesome5, Feather, AntDesign } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';

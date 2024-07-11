@@ -233,7 +233,6 @@ const index = () => {
       <CustomedButton title="Log out" handler={() => handleLogout()} />
       <Spinner
         visible={loading}
-        textContent={'Saving...'}
         textStyle={styles.spinnerTextStyle}
       />
     </SafeAreaView>

@@ -1,4 +1,5 @@
 import { Stack } from "expo-router";
+import { ModalPortal } from "react-native-modals";
 
 export default function Layout() {
     return (
@@ -7,6 +8,8 @@ export default function Layout() {
                 <Stack.Screen name="index" />
                 <Stack.Screen name='newJournal'/>
             </Stack>
+            {/* register the modal portal to use the component modal */}
+            <ModalPortal/>
         </>
     )
 }
