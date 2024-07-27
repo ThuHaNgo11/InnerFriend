@@ -24,7 +24,7 @@ To develop a complete mobile application that enables users to write journals mo
 * **Database**: MongoDB for efficient data storage and retrieval.
 * **Additional Services**: Integrated Firebase Store for image storage and leveraged OpenAI's Dalle model for image generation
   
-<img width="452" alt="image" src="https://github.com/user-attachments/assets/2426dbfa-c333-4c2e-8b15-77c315adbc55">
+<div align="center"><img width="452" alt="image" src="https://github.com/user-attachments/assets/2426dbfa-c333-4c2e-8b15-77c315adbc55"></div>
 
 
 
