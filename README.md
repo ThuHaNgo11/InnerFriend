@@ -35,7 +35,7 @@ To develop a complete mobile application that enables users to write journals mo
 <div align="center"><img width="452" alt="image" src="https://github.com/user-attachments/assets/58d645f9-dedd-4e00-88cb-fb2bf2d02e17"></div>
 
 ## UMl Use case diagram 
-<div align="center"><img width="397" alt="image" src="https://github.com/user-attachments/assets/c4508ca1-b693-4682-aa5d-5fe86a2adcc9"></div>
+<div align="center"><img width="452" alt="image" src="https://github.com/user-attachments/assets/c4508ca1-b693-4682-aa5d-5fe86a2adcc9"></div>
 
 
 
