@@ -39,7 +39,7 @@ To develop a complete mobile application that enables users to write journals mo
 
 ## Demo
 <div align="center">
-  <img width="230" height="500" alt="Screenshot 2024-07-27 at 8 39 15 AM" src="https://github.com/user-attachments/assets/9a38cf48-192a-4ca3-b3bf-e14b019e9fb7">
+  <img width="230" height="475" alt="Screenshot 2024-07-27 at 8 39 15 AM" src="https://github.com/user-attachments/assets/9a38cf48-192a-4ca3-b3bf-e14b019e9fb7">
   <img width="230" alt="Screenshot 2024-07-27 at 8 39 24 AM" src="https://github.com/user-attachments/assets/ce060d17-073d-4982-8f50-a0d49e2bc283">
   <img width="230" alt="Screenshot 2024-07-27 at 1 16 47 PM" src="https://github.com/user-attachments/assets/c25958d3-5bfc-4648-b448-60bbabdffa6c">
   <img width="230" alt="Screenshot 2024-07-27 at 1 18 41 PM" src="https://github.com/user-attachments/assets/d38541ac-dfc2-4107-a9ac-895cd90f2ea2">
