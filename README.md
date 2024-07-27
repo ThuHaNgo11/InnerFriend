@@ -26,5 +26,9 @@ To develop a complete mobile application that enables users to write journals mo
   
 <div align="center"><img width="452" alt="image" src="https://github.com/user-attachments/assets/2426dbfa-c333-4c2e-8b15-77c315adbc55"></div>
 
+## System architecture
+<div align="center><img width="366" alt="image" src="https://github.com/user-attachments/assets/58d645f9-dedd-4e00-88cb-fb2bf2d02e17"></div>
+
+
 
 
