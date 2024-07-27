@@ -27,7 +27,12 @@ To develop a complete mobile application that enables users to write journals mo
 <div align="center"><img width="452" alt="image" src="https://github.com/user-attachments/assets/2426dbfa-c333-4c2e-8b15-77c315adbc55"></div>
 
 ## System architecture
-<div align="center><img width="366" alt="image" src="https://github.com/user-attachments/assets/58d645f9-dedd-4e00-88cb-fb2bf2d02e17"></div>
+1. Life cycle without backend interaction: A1 -> A5
+2. Life cycle with backend interaction: A1 -> A2 -> B1 -> B5 -> A3 -> A4 ->A5
+3. Life cycle with extended services: A1 -> A2 -> C1 -> C2 -> A3 -> A4 -> A5
+4. Interact with Firebase service: A1 -> A2 -> D1 -> D2 -> A3 -> A4 -> A5
+
+<div align="center"><img width="366" alt="image" src="https://github.com/user-attachments/assets/58d645f9-dedd-4e00-88cb-fb2bf2d02e17"></div>
 
 
 
