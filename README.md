@@ -37,6 +37,22 @@ To develop a complete mobile application that enables users to write journals mo
 ## UMl Use case diagram 
 <div align="center"><img width="452" alt="image" src="https://github.com/user-attachments/assets/c4508ca1-b693-4682-aa5d-5fe86a2adcc9"></div>
 
+## Demo
+<div align="center">
+  <img width="263" alt="Screenshot 2024-07-27 at 1 18 41 PM" src="https://github.com/user-attachments/assets/d38541ac-dfc2-4107-a9ac-895cd90f2ea2">
+  <img width="263" alt="Screenshot 2024-07-27 at 8 39 15 AM" src="https://github.com/user-attachments/assets/9a38cf48-192a-4ca3-b3bf-e14b019e9fb7">
+  <img width="264" alt="Screenshot 2024-07-27 at 8 39 24 AM" src="https://github.com/user-attachments/assets/ce060d17-073d-4982-8f50-a0d49e2bc283">
+  <img width="261" alt="Screenshot 2024-07-27 at 10 19 54 AM" src="https://github.com/user-attachments/assets/1a241430-bb2e-42fc-9ab2-f55767152f72">
+</div>
+
+<div align="center">
+<img width="266" alt="Screenshot 2024-07-27 at 1 16 47 PM" src="https://github.com/user-attachments/assets/c25958d3-5bfc-4648-b448-60bbabdffa6c">
+<img width="266" alt="Screenshot 2024-07-27 at 1 26 35 PM" src="https://github.com/user-attachments/assets/8a386a6a-ba66-43a2-a9d1-42218f556dff">
+<img width="265" alt="Screenshot 2024-07-27 at 1 26 44 PM" src="https://github.com/user-attachments/assets/6839f0ef-a86f-4129-abba-eb17f4a5f492">
+<img width="266" alt="Screenshot 2024-07-27 at 1 26 28 PM" src="https://github.com/user-attachments/assets/f4de044a-c904-4dee-941a-a69eb91cb044">
+<img width="261" alt="Screenshot 2024-07-27 at 1 20 39 PM" src="https://github.com/user-attachments/assets/62ce77f7-b2ab-4e26-987e-d0ff30266cc3">
+</div>
+
 ## Getting started
 1. Clone the repository.
 2. Install the necessary dependencies by "npm install" in the root directory and root/api.
