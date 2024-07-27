@@ -37,6 +37,14 @@ To develop a complete mobile application that enables users to write journals mo
 ## UMl Use case diagram 
 <div align="center"><img width="452" alt="image" src="https://github.com/user-attachments/assets/c4508ca1-b693-4682-aa5d-5fe86a2adcc9"></div>
 
+## Getting started
+1. Clone the repository.
+2. Install the necessary dependencies by "npm install" in the root directory and root/api.
+3. Set up MongoDB database.
+4. Set up Firebase Fire store.
+5. Create API key for using Open AI Dalle 2 model.
+6. Create .evn files and add API keys used for both backend and frontend.
+7. Begin your journaling journey with InnerFriend!
 
 
 
